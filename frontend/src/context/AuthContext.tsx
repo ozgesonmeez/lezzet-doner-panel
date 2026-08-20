@@ -59,11 +59,12 @@ function isTokenExpired(
         "="
       );
 
-    const parsed = JSON.parse(
-      atob(payload)
-    ) as {
-      exp?: number;
-    };
+    const parsed =
+      JSON.parse(
+        atob(payload)
+      ) as {
+        exp?: number;
+      };
 
     if (!parsed.exp) {
       return true;
@@ -98,6 +99,23 @@ export function AuthProvider({
 
   const logout =
     useCallback(() => {
+      void fetch(
+        "/api/bff/api/auth/logout",
+        {
+          method:
+            "POST",
+
+          credentials:
+            "same-origin",
+
+          keepalive:
+            true,
+        }
+      ).catch(() => {
+        // Logout isteği başarısız olsa bile
+        // tarayıcıdaki local oturum temizlenir.
+      });
+
       localStorage.removeItem(
         AUTH_TOKEN_KEY
       );
@@ -147,8 +165,13 @@ export function AuthProvider({
           storedUser
         ) as AuthUser;
 
-      setToken(storedToken);
-      setUser(parsedUser);
+      setToken(
+        storedToken
+      );
+
+      setUser(
+        parsedUser
+      );
     } catch {
       localStorage.removeItem(
         AUTH_TOKEN_KEY
@@ -205,8 +228,13 @@ export function AuthProvider({
           )
         );
 
-        setToken(result.token);
-        setUser(result.user);
+        setToken(
+          result.token
+        );
+
+        setUser(
+          result.user
+        );
 
         return result.user;
       },
@@ -242,7 +270,9 @@ export function AuthProvider({
 
 export function useAuth() {
   const context =
-    useContext(AuthContext);
+    useContext(
+      AuthContext
+    );
 
   if (!context) {
     throw new Error(
