@@ -79,6 +79,50 @@ function isTokenExpired(
   }
 }
 
+function clearLocalAuth() {
+  localStorage.removeItem(
+    AUTH_TOKEN_KEY
+  );
+
+  localStorage.removeItem(
+    AUTH_USER_KEY
+  );
+}
+
+async function clearServerSession() {
+  try {
+    await fetch(
+      "/api/bff/api/auth/logout",
+      {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+      }
+    );
+  } catch {
+    // Sunucu logout isteği başarısız olsa bile
+    // local oturum temizlenmeye devam eder.
+  }
+}
+
+async function validateServerSession() {
+  try {
+    const response =
+      await fetch(
+        "/api/bff/api/couriers/today",
+        {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store",
+        }
+      );
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function AuthProvider({
   children,
 }: {
@@ -97,98 +141,104 @@ export function AuthProvider({
   const [loading, setLoading] =
     useState(true);
 
-  const logout =
+  const resetAuth =
     useCallback(() => {
-      void fetch(
-        "/api/bff/api/auth/logout",
-        {
-          method:
-            "POST",
-
-          credentials:
-            "same-origin",
-
-          keepalive:
-            true,
-        }
-      ).catch(() => {
-        // Logout isteği başarısız olsa bile
-        // tarayıcıdaki local oturum temizlenir.
-      });
-
-      localStorage.removeItem(
-        AUTH_TOKEN_KEY
-      );
-
-      localStorage.removeItem(
-        AUTH_USER_KEY
-      );
+      clearLocalAuth();
 
       setUser(null);
       setToken(null);
     }, []);
 
+  const logout =
+    useCallback(() => {
+      void clearServerSession();
+
+      resetAuth();
+    }, [
+      resetAuth,
+    ]);
+
   useEffect(() => {
-    try {
-      const storedToken =
-        localStorage.getItem(
-          AUTH_TOKEN_KEY
-        );
+    let cancelled =
+      false;
 
-      const storedUser =
-        localStorage.getItem(
-          AUTH_USER_KEY
-        );
+    async function restoreSession() {
+      try {
+        const storedToken =
+          localStorage.getItem(
+            AUTH_TOKEN_KEY
+          );
 
-      if (
-        !storedToken ||
-        !storedUser ||
-        isTokenExpired(
+        const storedUser =
+          localStorage.getItem(
+            AUTH_USER_KEY
+          );
+
+        if (
+          !storedToken ||
+          !storedUser ||
+          isTokenExpired(
+            storedToken
+          )
+        ) {
+          clearLocalAuth();
+
+          await clearServerSession();
+
+          return;
+        }
+
+        const parsedUser =
+          JSON.parse(
+            storedUser
+          ) as AuthUser;
+
+        const sessionValid =
+          await validateServerSession();
+
+        if (
+          !sessionValid
+        ) {
+          clearLocalAuth();
+
+          await clearServerSession();
+
+          return;
+        }
+
+        if (cancelled) {
+          return;
+        }
+
+        setToken(
           storedToken
-        )
-      ) {
-        localStorage.removeItem(
-          AUTH_TOKEN_KEY
         );
 
-        localStorage.removeItem(
-          AUTH_USER_KEY
+        setUser(
+          parsedUser
         );
+      } catch {
+        clearLocalAuth();
 
-        setLoading(false);
-
-        return;
+        await clearServerSession();
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-
-      const parsedUser =
-        JSON.parse(
-          storedUser
-        ) as AuthUser;
-
-      setToken(
-        storedToken
-      );
-
-      setUser(
-        parsedUser
-      );
-    } catch {
-      localStorage.removeItem(
-        AUTH_TOKEN_KEY
-      );
-
-      localStorage.removeItem(
-        AUTH_USER_KEY
-      );
-    } finally {
-      setLoading(false);
     }
+
+    void restoreSession();
+
+    return () => {
+      cancelled =
+        true;
+    };
   }, []);
 
   useEffect(() => {
     function handleInvalidAuth() {
-      setUser(null);
-      setToken(null);
+      resetAuth();
     }
 
     window.addEventListener(
@@ -202,7 +252,88 @@ export function AuthProvider({
         handleInvalidAuth
       );
     };
-  }, []);
+  }, [
+    resetAuth,
+  ]);
+
+  useEffect(() => {
+    async function revalidateSession() {
+      const storedToken =
+        localStorage.getItem(
+          AUTH_TOKEN_KEY
+        );
+
+      const storedUser =
+        localStorage.getItem(
+          AUTH_USER_KEY
+        );
+
+      if (
+        !storedToken ||
+        !storedUser
+      ) {
+        return;
+      }
+
+      if (
+        isTokenExpired(
+          storedToken
+        )
+      ) {
+        resetAuth();
+
+        await clearServerSession();
+
+        return;
+      }
+
+      const valid =
+        await validateServerSession();
+
+      if (!valid) {
+        resetAuth();
+
+        await clearServerSession();
+      }
+    }
+
+    function handleFocus() {
+      void revalidateSession();
+    }
+
+    function handleVisibilityChange() {
+      if (
+        document.visibilityState ===
+        "visible"
+      ) {
+        void revalidateSession();
+      }
+    }
+
+    window.addEventListener(
+      "focus",
+      handleFocus
+    );
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
+
+    return () => {
+      window.removeEventListener(
+        "focus",
+        handleFocus
+      );
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+    };
+  }, [
+    resetAuth,
+  ]);
 
   const login =
     useCallback(
