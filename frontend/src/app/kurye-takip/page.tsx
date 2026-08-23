@@ -77,6 +77,13 @@ export default function CourierTrackingPage() {
   ] = useState(false);
 
   const [
+    expandedCouriers,
+    setExpandedCouriers,
+  ] = useState<
+    Record<number, boolean>
+  >({});
+
+  const [
     editingEntry,
     setEditingEntry,
   ] =
@@ -156,23 +163,6 @@ export default function CourierTrackingPage() {
           ) =>
             total +
             courier.packageCount,
-          0
-        ),
-      [activeCouriers]
-    );
-
-  const totalPackageAmount =
-    useMemo(
-      () =>
-        activeCouriers.reduce(
-          (
-            total,
-            courier
-          ) =>
-            total +
-            Number(
-              courier.totalAmount
-            ),
           0
         ),
       [activeCouriers]
@@ -589,7 +579,7 @@ export default function CourierTrackingPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3">
           <SummaryCard
             icon={
               <Users
@@ -615,21 +605,6 @@ export default function CourierTrackingPage() {
             )}
             color="orange"
           />
-
-          <div className="col-span-2 sm:col-span-1">
-            <SummaryCard
-              icon={
-                <Bike
-                  size={20}
-                />
-              }
-              title="Paketler Toplamı"
-              value={formatCurrency(
-                totalPackageAmount
-              )}
-              color="green"
-            />
-          </div>
         </div>
 
         {activeCouriers.length ===
@@ -668,7 +643,26 @@ export default function CourierTrackingPage() {
         ) : (
           <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
             {activeCouriers.map(
-              (courier) => (
+              (courier) => {
+                const reversedEntries =
+                  [
+                    ...courier.entries,
+                  ].reverse();
+
+                const showAllEntries =
+                  expandedCouriers[
+                    courier.id
+                  ] ?? false;
+
+                const visibleEntries =
+                  showAllEntries
+                    ? reversedEntries
+                    : reversedEntries.slice(
+                        0,
+                        5
+                      );
+
+                return (
                 <section
                   key={
                     courier.id
@@ -761,32 +755,16 @@ export default function CourierTrackingPage() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 border-y border-slate-100 bg-slate-50">
-                    <div className="p-4">
-                      <p className="text-xs text-slate-500">
-                        Toplam Paket
-                      </p>
+                  <div className="border-y border-slate-100 bg-slate-50 p-4">
+                    <p className="text-xs text-slate-500">
+                      Bugünkü Paket Adedi
+                    </p>
 
-                      <p className="mt-1 text-xl font-bold">
-                        {
-                          courier.packageCount
-                        }
-                      </p>
-                    </div>
-
-                    <div className="border-l border-slate-200 p-4">
-                      <p className="text-xs text-slate-500">
-                        Toplam Tutar
-                      </p>
-
-                      <p className="mt-1 text-xl font-bold text-emerald-600">
-                        {formatCurrency(
-                          Number(
-                            courier.totalAmount
-                          )
-                        )}
-                      </p>
-                    </div>
+                    <p className="mt-1 text-xl font-bold">
+                      {
+                        courier.packageCount
+                      }
+                    </p>
                   </div>
 
                   <div className="p-4 sm:p-5">
@@ -804,11 +782,7 @@ export default function CourierTrackingPage() {
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        {[
-                          ...courier.entries,
-                        ]
-                          .reverse()
-                          .map(
+                        {visibleEntries.map(
                             (
                               entry,
                               index
@@ -1021,11 +995,47 @@ export default function CourierTrackingPage() {
                               );
                             }
                           )}
+
+                        {courier.entries.length >
+                          5 && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedCouriers(
+                                (
+                                  current
+                                ) => ({
+                                  ...current,
+                                  [courier.id]:
+                                    !showAllEntries,
+                                })
+                              )
+                            }
+                            className="mt-3 flex min-h-[46px] w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+                            aria-expanded={
+                              showAllEntries
+                            }
+                          >
+                            {showAllEntries
+                              ? "Daralt"
+                              : `Tümünü Göster (${courier.entries.length})`}
+
+                            <ChevronDown
+                              size={18}
+                              className={`transition-transform ${
+                                showAllEntries
+                                  ? "rotate-180"
+                                  : ""
+                              }`}
+                            />
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
                 </section>
-              )
+                );
+              }
             )}
           </div>
         )}
@@ -1250,8 +1260,7 @@ function SummaryCard({
   value: string;
   color:
     | "blue"
-    | "orange"
-    | "green";
+    | "orange";
 }) {
   const styles = {
     blue:
@@ -1260,8 +1269,6 @@ function SummaryCard({
     orange:
       "bg-orange-50 text-orange-500",
 
-    green:
-      "bg-emerald-50 text-emerald-600",
   };
 
   return (
