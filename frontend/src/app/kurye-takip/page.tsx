@@ -27,6 +27,7 @@ import {
 import {
   createCourier,
   createCourierEntry,
+  deleteCourier,
   deleteCourierEntry,
   getTodayCouriers,
   updateCourierEntry,
@@ -480,6 +481,44 @@ export default function CourierTrackingPage() {
         err instanceof Error
           ? err.message
           : "Kurye durumu güncellenemedi."
+      );
+    } finally {
+      setProcessing(false);
+    }
+  }
+
+  async function handleDeleteCourier(
+    courier: Courier
+  ) {
+    if (!isAdmin || processing) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        `${courier.name} isimli kuryeyi silmek istediğine emin misin?\n\nPaket geçmişi bulunan kuryeler silinmez; geçmiş kayıtları korumak için pasife alınmalıdır.`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      setError(null);
+
+      await deleteCourier(
+        courier.id
+      );
+
+      await loadCouriers(
+        false
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Kurye silinemedi. Paket geçmişi varsa kuryeyi pasife alın."
       );
     } finally {
       setProcessing(false);
@@ -1109,44 +1148,66 @@ export default function CourierTrackingPage() {
                         </p>
                       </div>
 
-                      <button
-                        type="button"
-                        disabled={
-                          processing
-                        }
-                        onClick={() =>
-                          void handleStatus(
-                            courier
-                          )
-                        }
-                        className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold disabled:opacity-50 ${
-                          courier.active
-                            ? "bg-red-50 text-red-600"
-                            : "bg-emerald-50 text-emerald-700"
-                        }`}
-                      >
-                        {courier.active ? (
-                          <>
-                            <PowerOff
-                              size={
-                                15
-                              }
-                            />
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={
+                            processing
+                          }
+                          onClick={() =>
+                            void handleStatus(
+                              courier
+                            )
+                          }
+                          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold disabled:opacity-50 ${
+                            courier.active
+                              ? "bg-red-50 text-red-600"
+                              : "bg-emerald-50 text-emerald-700"
+                          }`}
+                        >
+                          {courier.active ? (
+                            <>
+                              <PowerOff
+                                size={
+                                  15
+                                }
+                              />
 
-                            Pasife Al
-                          </>
-                        ) : (
-                          <>
-                            <Power
-                              size={
-                                15
-                              }
-                            />
+                              Pasife Al
+                            </>
+                          ) : (
+                            <>
+                              <Power
+                                size={
+                                  15
+                                }
+                              />
 
-                            Aktif Et
-                          </>
-                        )}
-                      </button>
+                              Aktif Et
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={
+                            processing
+                          }
+                          onClick={() =>
+                            void handleDeleteCourier(
+                              courier
+                            )
+                          }
+                          className="flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 disabled:opacity-50"
+                          aria-label={`${courier.name} kuryesini sil`}
+                        >
+                          <Trash2
+                            size={15}
+                          />
+
+                          Sil
+                        </button>
+                      </div>
                     </div>
                   )
                 )}

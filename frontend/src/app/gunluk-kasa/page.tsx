@@ -461,6 +461,10 @@ export default function DailyCashPage() {
     );
   }
 
+  const totalWork =
+    Number(cash.totalIncome) +
+    Number(cash.totalExpense);
+
   return (
     <main className="min-h-screen bg-[#f7f8fa] text-slate-900">
       {/* HEADER */}
@@ -558,22 +562,14 @@ export default function DailyCashPage() {
 
           <div className="col-span-2 sm:col-span-1">
             <SummaryCard
-              title="Net Kalan"
+              title="Toplam İş"
               value={formatCurrency(
-                Number(
-                  cash.netAmount
-                )
+                totalWork
               )}
               icon={
                 <Wallet size={20} />
               }
-              type={
-                Number(
-                  cash.netAmount
-                ) >= 0
-                  ? "blue"
-                  : "red"
-              }
+              type="blue"
             />
           </div>
         </div>
@@ -876,29 +872,19 @@ export default function DailyCashPage() {
               </h2>
 
               <p className="text-xs text-slate-500">
-                Gelir - gider sonucu
+                Gelir + gider toplamı
               </p>
             </div>
           </div>
 
           <div className="mt-4 rounded-2xl bg-[#082d4e] p-5 text-white">
             <p className="text-xs text-slate-300">
-              Bugünkü Net Kalan
+              Bugünkü Toplam İş
             </p>
 
-            <p
-              className={`mt-2 text-3xl font-black ${
-                Number(
-                  cash.netAmount
-                ) >= 0
-                  ? "text-emerald-400"
-                  : "text-red-400"
-              }`}
-            >
+            <p className="mt-2 text-3xl font-black text-orange-300">
               {formatCurrency(
-                Number(
-                  cash.netAmount
-                )
+                totalWork
               )}
             </p>
           </div>

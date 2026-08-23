@@ -4,6 +4,7 @@ import com.lezzetdoner.backend.courier.dto.CourierEntryResponse;
 import com.lezzetdoner.backend.courier.dto.CourierResponse;
 import com.lezzetdoner.backend.user.AppUser;
 import com.lezzetdoner.backend.user.AppUserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,6 +128,33 @@ public class CourierService {
                         ISTANBUL_ZONE
                 )
         );
+    }
+
+    @Transactional
+    public void deleteCourier(
+            Long courierId
+    ) {
+
+        Courier courier =
+                getCourier(
+                        courierId
+                );
+
+        try {
+            courierRepository.delete(
+                    courier
+            );
+
+            courierRepository.flush();
+        } catch (
+                DataIntegrityViolationException exception
+        ) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Paket geçmişi olan kurye silinemez. Geçmiş kayıtları korumak için kuryeyi pasife alın."
+            );
+        }
     }
 
     @Transactional

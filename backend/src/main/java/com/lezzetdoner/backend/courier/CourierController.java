@@ -66,6 +66,23 @@ public class CourierController {
                 );
     }
 
+    @DeleteMapping(
+            "/couriers/{courierId}"
+    )
+    @ResponseStatus(
+            HttpStatus.NO_CONTENT
+    )
+    public void deleteCourier(
+            @PathVariable
+            Long courierId
+    ) {
+
+        courierService
+                .deleteCourier(
+                        courierId
+                );
+    }
+
     @PostMapping(
             "/couriers/{courierId}/entries"
     )

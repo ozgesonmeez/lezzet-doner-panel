@@ -249,6 +249,22 @@ export async function updateCourierStatus(
   );
 }
 
+export async function deleteCourier(
+  courierId: number
+): Promise<void> {
+  const response =
+    await authorizedFetch(
+      `${API_URL}/api/couriers/${courierId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+  return handleResponse<void>(
+    response
+  );
+}
+
 export async function createCourierEntry(
   courierId: number,
   amount: number
