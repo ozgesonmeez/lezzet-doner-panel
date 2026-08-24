@@ -31,10 +31,7 @@ public class DailyCashService {
     @Transactional(readOnly = true)
     public DailyCashResponse getDailyCash(LocalDate requestedDate) {
 
-        LocalDate date =
-                requestedDate != null
-                        ? requestedDate
-                        : LocalDate.now(ISTANBUL_ZONE);
+        LocalDate date = resolveEntryDate(requestedDate);
 
         List<DailyIncomeEntry> incomes =
                 incomeRepository
@@ -88,14 +85,16 @@ public class DailyCashService {
             CreateIncomeRequest request
     ) {
 
-        LocalDate today =
-                LocalDate.now(ISTANBUL_ZONE);
+        LocalDate entryDate =
+                resolveEntryDate(
+                        request.entryDate()
+                );
 
         DailyIncomeEntry entry =
                 new DailyIncomeEntry(
                         normalize(request.channel()),
                         request.amount(),
-                        today
+                        entryDate
                 );
 
         return toIncomeResponse(
@@ -148,14 +147,16 @@ public class DailyCashService {
             CreateExpenseRequest request
     ) {
 
-        LocalDate today =
-                LocalDate.now(ISTANBUL_ZONE);
+        LocalDate entryDate =
+                resolveEntryDate(
+                        request.entryDate()
+                );
 
         DailyExpenseEntry entry =
                 new DailyExpenseEntry(
                         normalize(request.description()),
                         request.amount(),
-                        today
+                        entryDate
                 );
 
         return toExpenseResponse(
@@ -227,6 +228,28 @@ public class DailyCashService {
                 entry.getEntryDate(),
                 entry.getCreatedAt()
         );
+    }
+
+    private LocalDate resolveEntryDate(
+            LocalDate requestedDate
+    ) {
+
+        LocalDate today =
+                LocalDate.now(ISTANBUL_ZONE);
+
+        LocalDate date =
+                requestedDate != null
+                        ? requestedDate
+                        : today;
+
+        if (date.isAfter(today)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Gelecek bir tarihe kasa kaydı eklenemez."
+            );
+        }
+
+        return date;
     }
 
     private String normalize(String value) {

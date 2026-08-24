@@ -63,9 +63,52 @@ const suggestedChannels = [
   "Getir",
 ];
 
+function getTodayInIstanbul() {
+  const parts =
+    new Intl.DateTimeFormat(
+      "en-US",
+      {
+        timeZone: "Europe/Istanbul",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }
+    ).formatToParts(
+      new Date()
+    );
+
+  const year =
+    parts.find(
+      (part) =>
+        part.type === "year"
+    )?.value ?? "";
+
+  const month =
+    parts.find(
+      (part) =>
+        part.type === "month"
+    )?.value ?? "";
+
+  const day =
+    parts.find(
+      (part) =>
+        part.type === "day"
+    )?.value ?? "";
+
+  return `${year}-${month}-${day}`;
+}
+
 export default function DailyCashPage() {
   const [cash, setCash] =
     useState<DailyCash | null>(null);
+
+  const [selectedDate, setSelectedDate] =
+    useState(
+      getTodayInIstanbul
+    );
+
+  const todayDate =
+    getTodayInIstanbul();
 
   const [loading, setLoading] =
     useState(true);
@@ -99,7 +142,10 @@ export default function DailyCashPage() {
     });
 
   const loadCash = useCallback(
-    async (withLoader = true) => {
+    async (
+      date: string,
+      withLoader = true
+    ) => {
       try {
         if (withLoader) {
           setLoading(true);
@@ -108,7 +154,9 @@ export default function DailyCashPage() {
         setError(null);
 
         const data =
-          await getDailyCash();
+          await getDailyCash(
+            date
+          );
 
         setCash(data);
       } catch (err) {
@@ -127,8 +175,13 @@ export default function DailyCashPage() {
   );
 
   useEffect(() => {
-    void loadCash();
-  }, [loadCash]);
+    void loadCash(
+      selectedDate
+    );
+  }, [
+    loadCash,
+    selectedDate,
+  ]);
 
   function formatCurrency(
     value: number
@@ -292,14 +345,18 @@ export default function DailyCashPage() {
       } else {
         await createDailyIncome(
           channel,
-          amount
+          amount,
+          selectedDate
         );
       }
 
       setIncomeModalOpen(false);
       resetIncomeForm();
 
-      await loadCash(false);
+      await loadCash(
+        selectedDate,
+        false
+      );
     } catch (err) {
       setError(
         err instanceof Error
@@ -341,14 +398,18 @@ export default function DailyCashPage() {
       } else {
         await createDailyExpense(
           description,
-          amount
+          amount,
+          selectedDate
         );
       }
 
       setExpenseModalOpen(false);
       resetExpenseForm();
 
-      await loadCash(false);
+      await loadCash(
+        selectedDate,
+        false
+      );
     } catch (err) {
       setError(
         err instanceof Error
@@ -379,7 +440,10 @@ export default function DailyCashPage() {
         incomeId
       );
 
-      await loadCash(false);
+      await loadCash(
+        selectedDate,
+        false
+      );
     } catch (err) {
       setError(
         err instanceof Error
@@ -410,7 +474,10 @@ export default function DailyCashPage() {
         expenseId
       );
 
-      await loadCash(false);
+      await loadCash(
+        selectedDate,
+        false
+      );
     } catch (err) {
       setError(
         err instanceof Error
@@ -450,7 +517,9 @@ export default function DailyCashPage() {
           <button
             type="button"
             onClick={() =>
-              void loadCash()
+              void loadCash(
+                selectedDate
+              )
             }
             className="mt-4 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white"
           >
@@ -489,18 +558,43 @@ export default function DailyCashPage() {
           </div>
 
           <div className="flex gap-2">
-            <div className="flex h-12 flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm sm:flex-none">
+            <label className="flex h-12 flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm sm:flex-none">
               <CalendarDays
                 size={17}
+                className="shrink-0 text-slate-500"
               />
 
-              {formatDate(cash.date)}
-            </div>
+              <input
+                type="date"
+                value={
+                  selectedDate
+                }
+                max={todayDate}
+                onChange={(event) => {
+                  const value =
+                    event.target
+                      .value;
+
+                  if (
+                    value &&
+                    value <= todayDate
+                  ) {
+                    setSelectedDate(
+                      value
+                    );
+                  }
+                }}
+                className="min-w-0 bg-transparent text-sm font-semibold text-slate-700 outline-none"
+                aria-label="Kasa tarihi"
+              />
+            </label>
 
             <button
               type="button"
               onClick={() =>
-                void loadCash()
+                void loadCash(
+                selectedDate
+              )
               }
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600"
               aria-label="Yenile"
@@ -868,7 +962,7 @@ export default function DailyCashPage() {
 
             <div>
               <h2 className="font-bold">
-                Gün Sonu
+                Seçili Gün
               </h2>
 
               <p className="text-xs text-slate-500">
@@ -879,7 +973,7 @@ export default function DailyCashPage() {
 
           <div className="mt-4 rounded-2xl bg-[#082d4e] p-5 text-white">
             <p className="text-xs text-slate-300">
-              Bugünkü Toplam İş
+              Seçili Gün Toplam İş
             </p>
 
             <p className="mt-2 text-3xl font-black text-orange-300">
@@ -901,7 +995,7 @@ export default function DailyCashPage() {
                   ? "Geliri Düzenle"
                   : "Gelir Ekle"
               }
-              subtitle="Satış kanalını ve tutarı girin."
+              subtitle={`${formatDate(selectedDate)} için satış kanalını ve tutarı girin.`}
               onClose={() => {
                 setIncomeModalOpen(
                   false
@@ -1015,7 +1109,7 @@ export default function DailyCashPage() {
                   ? "Gideri Düzenle"
                   : "Gider Ekle"
               }
-              subtitle="Gider açıklamasını ve tutarı girin."
+              subtitle={`${formatDate(selectedDate)} için gider açıklamasını ve tutarı girin.`}
               onClose={() => {
                 setExpenseModalOpen(
                   false

@@ -383,7 +383,8 @@ export async function getDailyCash(
 
 export async function createDailyIncome(
   channel: string,
-  amount: number
+  amount: number,
+  entryDate?: string
 ): Promise<DailyIncome> {
   const response =
     await authorizedFetch(
@@ -397,6 +398,7 @@ export async function createDailyIncome(
         body: JSON.stringify({
           channel,
           amount,
+          entryDate,
         }),
       }
     );
@@ -450,7 +452,8 @@ export async function deleteDailyIncome(
 
 export async function createDailyExpense(
   description: string,
-  amount: number
+  amount: number,
+  entryDate?: string
 ): Promise<DailyExpense> {
   const response =
     await authorizedFetch(
@@ -464,6 +467,7 @@ export async function createDailyExpense(
         body: JSON.stringify({
           description,
           amount,
+          entryDate,
         }),
       }
     );
