@@ -6,13 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class CourierController {
 
-    private final CourierService courierService;
+    private final CourierService
+            courierService;
 
     public CourierController(
             CourierService courierService
@@ -24,10 +26,32 @@ public class CourierController {
     @GetMapping(
             "/couriers/today"
     )
-    public List<CourierResponse> getTodayCouriers() {
+    public List<CourierResponse>
+    getTodayCouriers() {
 
         return courierService
                 .getTodayCouriers();
+    }
+
+    @GetMapping(
+            "/couriers"
+    )
+    public List<CourierResponse>
+    getCouriersForDate(
+            @RequestParam(
+                    required = false
+            )
+            LocalDate date,
+
+            Authentication authentication
+    ) {
+
+        return courierService
+                .getCouriersForDate(
+                        date,
+                        authentication
+                                .getName()
+                );
     }
 
     @PostMapping(
@@ -36,7 +60,8 @@ public class CourierController {
     @ResponseStatus(
             HttpStatus.CREATED
     )
-    public CourierResponse createCourier(
+    public CourierResponse
+    createCourier(
             @Valid
             @RequestBody
             CreateCourierRequest request
@@ -51,7 +76,8 @@ public class CourierController {
     @PatchMapping(
             "/couriers/{courierId}/status"
     )
-    public CourierResponse updateCourierStatus(
+    public CourierResponse
+    updateCourierStatus(
             @PathVariable
             Long courierId,
 
@@ -89,7 +115,8 @@ public class CourierController {
     @ResponseStatus(
             HttpStatus.CREATED
     )
-    public CourierResponse createCourierEntry(
+    public CourierResponse
+    createCourierEntry(
             @PathVariable
             Long courierId,
 
@@ -104,7 +131,10 @@ public class CourierController {
                 .addEntry(
                         courierId,
                         request.amount(),
-                        authentication.getName()
+                        request.entryDate(),
+                        request.entryType(),
+                        authentication
+                                .getName()
                 );
     }
 

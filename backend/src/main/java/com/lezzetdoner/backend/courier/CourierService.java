@@ -4,6 +4,7 @@ import com.lezzetdoner.backend.courier.dto.CourierEntryResponse;
 import com.lezzetdoner.backend.courier.dto.CourierResponse;
 import com.lezzetdoner.backend.user.AppUser;
 import com.lezzetdoner.backend.user.AppUserRepository;
+import com.lezzetdoner.backend.user.UserRole;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,18 @@ import java.util.List;
 public class CourierService {
 
     private static final ZoneId ISTANBUL_ZONE =
-            ZoneId.of("Europe/Istanbul");
+            ZoneId.of(
+                    "Europe/Istanbul"
+            );
 
-    private final CourierRepository courierRepository;
+    private final CourierRepository
+            courierRepository;
 
-    private final CourierEntryRepository courierEntryRepository;
+    private final CourierEntryRepository
+            courierEntryRepository;
 
-    private final AppUserRepository userRepository;
+    private final AppUserRepository
+            userRepository;
 
     public CourierService(
             CourierRepository courierRepository,
@@ -43,23 +49,56 @@ public class CourierService {
     }
 
     @Transactional(readOnly = true)
-    public List<CourierResponse> getTodayCouriers() {
+    public List<CourierResponse>
+    getTodayCouriers() {
 
         LocalDate today =
                 LocalDate.now(
                         ISTANBUL_ZONE
                 );
 
-        return courierRepository
-                .findAllByOrderByActiveDescNameAsc()
-                .stream()
-                .map(courier ->
-                        toResponse(
-                                courier,
-                                today
-                        )
-                )
-                .toList();
+        return getCouriersForDateInternal(
+                today
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<CourierResponse>
+    getCouriersForDate(
+            LocalDate requestedDate,
+            String authenticatedEmail
+    ) {
+
+        AppUser user =
+                getAuthenticatedUser(
+                        authenticatedEmail
+                );
+
+        LocalDate date =
+                resolveEntryDate(
+                        requestedDate
+                );
+
+        LocalDate today =
+                LocalDate.now(
+                        ISTANBUL_ZONE
+                );
+
+        if (
+                user.getRole()
+                        != UserRole.ADMIN
+                        &&
+                !date.equals(today)
+        ) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Geçmiş tarihli kurye kayıtlarını yalnızca yönetici görüntüleyebilir."
+            );
+        }
+
+        return getCouriersForDateInternal(
+                date
+        );
     }
 
     @Transactional
@@ -103,7 +142,8 @@ public class CourierService {
     }
 
     @Transactional
-    public CourierResponse updateCourierStatus(
+    public CourierResponse
+    updateCourierStatus(
             Long courierId,
             boolean active
     ) {
@@ -161,6 +201,8 @@ public class CourierService {
     public CourierResponse addEntry(
             Long courierId,
             BigDecimal amount,
+            LocalDate requestedDate,
+            CourierEntryType requestedType,
             String authenticatedEmail
     ) {
 
@@ -182,17 +224,45 @@ public class CourierService {
                         authenticatedEmail
                 );
 
+        LocalDate entryDate =
+                resolveEntryDate(
+                        requestedDate
+                );
+
         LocalDate today =
                 LocalDate.now(
                         ISTANBUL_ZONE
                 );
+
+        if (
+                user.getRole()
+                        != UserRole.ADMIN
+                        &&
+                !entryDate.equals(today)
+        ) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Geçmiş tarihe paket kaydını yalnızca yönetici ekleyebilir."
+            );
+        }
+
+        CourierEntryType entryType =
+                requestedType != null
+                        ? requestedType
+                        : CourierEntryType.NORMAL;
+
+        validateEntryAmount(
+                entryType,
+                amount
+        );
 
         CourierEntry entry =
                 new CourierEntry(
                         courier,
                         user,
                         amount,
-                        today
+                        entryDate,
+                        entryType
                 );
 
         courierEntryRepository.save(
@@ -201,7 +271,7 @@ public class CourierService {
 
         return toResponse(
                 courier,
-                today
+                entryDate
         );
     }
 
@@ -222,6 +292,29 @@ public class CourierService {
                                         "Paket kaydı bulunamadı."
                                 )
                         );
+
+        if (
+                entry.getEntryType()
+                        == CourierEntryType.ONLINE
+        ) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Online paket tutarı düzenlenemez."
+            );
+        }
+
+        if (
+                amount == null
+                        ||
+                amount.compareTo(
+                        BigDecimal.ZERO
+                ) <= 0
+        ) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Normal paket tutarı 0'dan büyük olmalıdır."
+            );
+        }
 
         entry.setAmount(
                 amount
@@ -256,6 +349,23 @@ public class CourierService {
                 );
     }
 
+    private List<CourierResponse>
+    getCouriersForDateInternal(
+            LocalDate date
+    ) {
+
+        return courierRepository
+                .findAllByOrderByActiveDescNameAsc()
+                .stream()
+                .map(courier ->
+                        toResponse(
+                                courier,
+                                date
+                        )
+                )
+                .toList();
+    }
+
     private Courier getCourier(
             Long courierId
     ) {
@@ -277,7 +387,8 @@ public class CourierService {
     ) {
 
         if (
-                email == null ||
+                email == null
+                        ||
                 email.isBlank()
         ) {
 
@@ -310,6 +421,75 @@ public class CourierService {
         return user;
     }
 
+    private LocalDate resolveEntryDate(
+            LocalDate requestedDate
+    ) {
+
+        LocalDate today =
+                LocalDate.now(
+                        ISTANBUL_ZONE
+                );
+
+        LocalDate date =
+                requestedDate != null
+                        ? requestedDate
+                        : today;
+
+        if (
+                date.isAfter(
+                        today
+                )
+        ) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Gelecek tarihe paket kaydı eklenemez."
+            );
+        }
+
+        return date;
+    }
+
+    private void validateEntryAmount(
+            CourierEntryType entryType,
+            BigDecimal amount
+    ) {
+
+        if (amount == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Paket tutarı gereklidir."
+            );
+        }
+
+        if (
+                entryType
+                        == CourierEntryType.NORMAL
+                        &&
+                amount.compareTo(
+                        BigDecimal.ZERO
+                ) <= 0
+        ) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Normal paket tutarı 0'dan büyük olmalıdır."
+            );
+        }
+
+        if (
+                entryType
+                        == CourierEntryType.ONLINE
+                        &&
+                amount.compareTo(
+                        BigDecimal.ZERO
+                ) != 0
+        ) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Online paket tutarı 0 TL olmalıdır."
+            );
+        }
+    }
+
     private CourierResponse toResponse(
             Courier courier,
             LocalDate date
@@ -322,7 +502,8 @@ public class CourierService {
                                 date
                         );
 
-        List<CourierEntryResponse> entryResponses =
+        List<CourierEntryResponse>
+                entryResponses =
                 entries.stream()
                         .map(entry -> {
 
@@ -333,6 +514,8 @@ public class CourierService {
                                     entry.getId(),
                                     entry.getAmount(),
                                     entry.getEntryDate(),
+                                    entry.getEntryType()
+                                            .name(),
                                     entry.getCreatedAt(),
 
                                     createdBy != null
@@ -344,7 +527,8 @@ public class CourierService {
                                             : null,
 
                                     createdBy != null
-                                            ? createdBy.getRole().name()
+                                            ? createdBy.getRole()
+                                            .name()
                                             : null
                             );
                         })

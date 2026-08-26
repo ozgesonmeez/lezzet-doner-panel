@@ -1,18 +1,22 @@
 package com.lezzetdoner.backend.courier.dto;
 
-import jakarta.validation.constraints.DecimalMin;
+import com.lezzetdoner.backend.courier.CourierEntryType;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public record CreateCourierEntryRequest(
 
-        @NotNull(message = "Paket tutarı gereklidir.")
-        @DecimalMin(
-                value = "0.01",
-                message = "Paket tutarı 0'dan büyük olmalıdır."
+        @NotNull(
+                message =
+                        "Paket tutarı gereklidir."
         )
-        BigDecimal amount
+        BigDecimal amount,
+
+        LocalDate entryDate,
+
+        CourierEntryType entryType
 
 ) {
 }

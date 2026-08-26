@@ -12,6 +12,8 @@ public record CourierEntryResponse(
 
         LocalDate entryDate,
 
+        String entryType,
+
         Instant createdAt,
 
         Long createdByUserId,

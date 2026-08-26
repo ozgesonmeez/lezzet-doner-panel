@@ -12,17 +12,24 @@ import java.time.LocalDate;
 public class CourierEntry {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
     @JoinColumn(
             name = "courier_id",
             nullable = false
     )
     private Courier courier;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(
+            fetch = FetchType.LAZY
+    )
     @JoinColumn(
             name = "created_by_user_id",
             updatable = false
@@ -41,6 +48,17 @@ public class CourierEntry {
             nullable = false
     )
     private LocalDate entryDate;
+
+    @Enumerated(
+            EnumType.STRING
+    )
+    @Column(
+            name = "entry_type",
+            nullable = false,
+            length = 20
+    )
+    private CourierEntryType entryType =
+            CourierEntryType.NORMAL;
 
     @Column(
             name = "created_at",
@@ -62,12 +80,23 @@ public class CourierEntry {
             Courier courier,
             AppUser createdBy,
             BigDecimal amount,
-            LocalDate entryDate
+            LocalDate entryDate,
+            CourierEntryType entryType
     ) {
-        this.courier = courier;
-        this.createdBy = createdBy;
-        this.amount = amount;
-        this.entryDate = entryDate;
+        this.courier =
+                courier;
+
+        this.createdBy =
+                createdBy;
+
+        this.amount =
+                amount;
+
+        this.entryDate =
+                entryDate;
+
+        this.entryType =
+                entryType;
     }
 
     @PrePersist
@@ -81,6 +110,11 @@ public class CourierEntry {
 
         this.updatedAt =
                 now;
+
+        if (this.entryType == null) {
+            this.entryType =
+                    CourierEntryType.NORMAL;
+        }
     }
 
     @PreUpdate
@@ -110,6 +144,10 @@ public class CourierEntry {
         return entryDate;
     }
 
+    public CourierEntryType getEntryType() {
+        return entryType;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -121,6 +159,7 @@ public class CourierEntry {
     public void setAmount(
             BigDecimal amount
     ) {
-        this.amount = amount;
+        this.amount =
+                amount;
     }
 }
