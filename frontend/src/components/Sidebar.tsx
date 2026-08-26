@@ -16,6 +16,7 @@ import {
   BarChart3,
   Bike,
   CalendarRange,
+  CircleDollarSign,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -44,6 +45,11 @@ const adminMenu = [
     label: "Günlük Kasa",
     href: "/gunluk-kasa",
     icon: WalletCards,
+  },
+  {
+    label: "Veresiye",
+    href: "/veresiye",
+    icon: CircleDollarSign,
   },
   {
     label: "Ay Sonu",
