@@ -42,6 +42,10 @@ export default function AppShell({
   const isLoginPage =
     pathname === "/login";
 
+  const isPublicMenuPage =
+    pathname === "/menu" ||
+    pathname.startsWith("/menu/");
+
   const isCourierPage =
     pathname ===
       "/kurye-takip" ||
@@ -50,6 +54,10 @@ export default function AppShell({
     );
 
   useEffect(() => {
+    if (isPublicMenuPage) {
+      return;
+    }
+
     if (loading) {
       return;
     }
@@ -62,7 +70,7 @@ export default function AppShell({
         user.role ===
           "PAKETCI"
           ? "/kurye-takip"
-          : "/"
+          : "/panel"
       );
 
       return;
@@ -94,8 +102,13 @@ export default function AppShell({
     pathname,
     router,
     isLoginPage,
+    isPublicMenuPage,
     isCourierPage,
   ]);
+
+  if (isPublicMenuPage) {
+    return <>{children}</>;
+  }
 
   if (isLoginPage) {
     return <>{children}</>;

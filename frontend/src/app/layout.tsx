@@ -1,42 +1,26 @@
-import type {
-  Metadata,
-} from "next";
 
-import {
-  Geist,
-  Geist_Mono,
-} from "next/font/google";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 
-import {
-  AuthProvider,
-} from "@/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
+import LayoutController from "@/components/LayoutController";
 
-import AppShell from "@/components/AppShell";
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
-const geistSans =
-  Geist({
-    variable:
-      "--font-geist-sans",
-    subsets: ["latin"],
-  });
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
-const geistMono =
-  Geist_Mono({
-    variable:
-      "--font-geist-mono",
-    subsets: ["latin"],
-  });
-
-export const metadata: Metadata =
-  {
-    title:
-      "Lezzet Döner Yönetim Paneli",
-
-    description:
-      "Lezzet Döner günlük operasyon, kurye ve finans yönetim paneli",
-  };
+export const metadata: Metadata = {
+  title: "1 Lezzet Döner",
+  description: "1 Lezzet Döner - Bursa Kestel",
+};
 
 export default function RootLayout({
   children,
@@ -49,9 +33,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-[#f7f8fa] antialiased`}
       >
         <AuthProvider>
-          <AppShell>
+          <LayoutController>
             {children}
-          </AppShell>
+          </LayoutController>
         </AuthProvider>
       </body>
     </html>

@@ -95,6 +95,13 @@ public class SecurityConfig {
 
                                 .requestMatchers(
                                         HttpMethod.GET,
+                                        "/api/public/menu",
+                                        "/api/public/menu/**"
+                                )
+                                .permitAll()
+
+                                .requestMatchers(
+                                        HttpMethod.GET,
                                         "/api/couriers/today"
                                 )
                                 .hasAnyRole(

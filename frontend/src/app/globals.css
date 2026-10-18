@@ -24,3 +24,145 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+
+/* 1 Lezzet Döner - original logo watermark */
+.ld-logo-watermark {
+  position: relative;
+  isolation: isolate;
+  background-color: #f8eddf;
+}
+
+.ld-logo-watermark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: #866c5b;
+  opacity: 0.055;
+
+  -webkit-mask-image: url('/lezzet-doner-logo-seffaf.png');
+  mask-image: url('/lezzet-doner-logo-seffaf.png');
+
+  -webkit-mask-size: 145px auto;
+  mask-size: 145px auto;
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* Sparse repeating watermark with generous spacing */
+.ld-logo-watermark {
+  background-image:
+    url('/lezzet-doner-logo-seffaf.png');
+  background-size: 370px auto;
+  background-repeat: repeat;
+  background-position: 35px 20px;
+}
+
+@media (max-width: 639px) {
+  .ld-logo-watermark::before {
+    opacity: 0.035;
+    -webkit-mask-size: 100px auto;
+    mask-size: 100px auto;
+  }
+
+  .ld-logo-watermark {
+    background-size: 270px auto;
+  }
+}
+
+
+/* 1 Lezzet Döner — selected PNG background */
+.ld-logo-watermark {
+  background-color: #f8eddf !important;
+  background-image: url('/Krem%20Zemin%20%C3%9Czerinde%20Lezzet%20D%C3%B6ner%20Deseni.png') !important;
+  background-size: 2200px auto !important;
+  background-repeat: repeat !important;
+  background-position: center top !important;
+}
+
+.ld-logo-watermark::before {
+  display: none !important;
+}
+
+
+/* Consistent logo background scale on smaller screens */
+@media (max-width: 639px) {
+  .ld-logo-watermark {
+    background-size: 1500px auto !important;
+    background-position: center top !important;
+  }
+}
+
+
+/* 1 Lezzet Döner — premium scroll animations */
+@keyframes ld-soft-reveal {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ld-scroll-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 650ms ease, transform 650ms ease;
+}
+
+.ld-scroll-reveal.ld-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ld-product-enter {
+  animation: ld-soft-reveal 450ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ld-scroll-reveal,
+  .ld-scroll-reveal.ld-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .ld-product-enter {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* 1 Lezzet Döner — Google yorum geçiş animasyonu */
+@keyframes ld-review-slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(16px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.ld-review-enter {
+  animation: ld-review-slide-in 550ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.ld-review-side-enter {
+  animation: ld-review-slide-in 650ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ld-review-enter,
+  .ld-review-side-enter {
+    animation: none !important;
+  }
+}

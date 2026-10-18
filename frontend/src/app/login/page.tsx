@@ -85,7 +85,7 @@ export default function LoginPage() {
         user.role ===
           "PAKETCI"
           ? "/kurye-takip"
-          : "/"
+          : "/panel"
       );
     } catch (err) {
       setError(

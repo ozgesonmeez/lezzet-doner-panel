@@ -20,6 +20,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  QrCode,
   Settings,
   UserRound,
   WalletCards,
@@ -33,7 +34,7 @@ import {
 const adminMenu = [
   {
     label: "Dashboard",
-    href: "/",
+    href: "/panel",
     icon: LayoutDashboard,
   },
   {
@@ -60,6 +61,11 @@ const adminMenu = [
     label: "Raporlar",
     href: "/raporlar",
     icon: BarChart3,
+  },
+  {
+    label: "QR Menü",
+    href: "/qr-menu",
+    icon: QrCode,
   },
   {
     label: "Ayarlar",
@@ -107,8 +113,8 @@ export default function Sidebar() {
   function isActive(
     href: string
   ) {
-    if (href === "/") {
-      return pathname === "/";
+    if (href === "/panel") {
+      return pathname === "/panel";
     }
 
     return (
