@@ -31,6 +31,18 @@ public class MenuImageService {
     public MenuImageResponse upload(MultipartFile file) {
         validate(file);
 
+        if (cloudinary.config.cloudName == null
+                || cloudinary.config.cloudName.isBlank()
+                || cloudinary.config.apiKey == null
+                || cloudinary.config.apiKey.isBlank()
+                || cloudinary.config.apiSecret == null
+                || cloudinary.config.apiSecret.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Görsel yükleme hizmeti henüz yapılandırılmadı."
+            );
+        }
+
         try {
             Map<?, ?> result = cloudinary.uploader().upload(
                     file.getBytes(),
