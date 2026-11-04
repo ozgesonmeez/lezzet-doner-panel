@@ -9,6 +9,10 @@ export const dynamic = "force-dynamic";
 const SESSION_COOKIE_NAME =
   "lezzet_session";
 
+// The QR manager is on a separate Railway service and separate database.
+const MENU_SESSION_COOKIE_NAME =
+  "lezzet_menu_session";
+
 const DEFAULT_SESSION_SECONDS =
   8 * 60 * 60;
 
@@ -37,6 +41,14 @@ function getBackendApiUrl() {
     /\/+$/,
     ""
   );
+}
+
+function getMenuBackendApiUrl() {
+  const value = process.env.MENU_BACKEND_API_URL?.trim();
+  if (!value) {
+    throw new Error("MENU_BACKEND_API_URL tanımlı değil.");
+  }
+  return value.replace(/\/+$/, "");
 }
 
 function isUnsafeMethod(
@@ -247,6 +259,33 @@ function setSessionCookie(
   });
 }
 
+function setMenuSessionCookie(
+  response: NextResponse,
+  token: string
+) {
+  response.cookies.set({
+    name: MENU_SESSION_COOKIE_NAME,
+    value: token,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: getSessionMaxAge(token),
+  });
+}
+
+function clearMenuSessionCookie(response: NextResponse) {
+  response.cookies.set({
+    name: MENU_SESSION_COOKIE_NAME,
+    value: "",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
 function clearSessionCookie(
   response: NextResponse
 ) {
@@ -410,6 +449,36 @@ async function handleLogin(
     data.token
   );
 
+  // Main login remains authoritative. A failed secondary login must not
+  // interrupt cash, courier, or dashboard access.
+  try {
+    const menuLoginResponse = await fetch(
+      `${getMenuBackendApiUrl()}/api/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": request.headers.get("content-type") ?? "application/json",
+          Accept: "application/json",
+        },
+        body,
+        cache: "no-store",
+        redirect: "manual",
+        signal: AbortSignal.timeout(8000),
+      }
+    );
+
+    if (menuLoginResponse.ok) {
+      const menuLogin = (await menuLoginResponse.json()) as BackendLoginResponse;
+      if (menuLogin.token && menuLogin.user) {
+        setMenuSessionCookie(response, menuLogin.token);
+      }
+    } else {
+      console.warn("QR menu session could not be established:", menuLoginResponse.status);
+    }
+  } catch (error) {
+    console.warn("QR menu backend login unavailable:", error);
+  }
+
   return response;
 }
 
@@ -453,6 +522,7 @@ function handleLogout(
   clearSessionCookie(
     response
   );
+  clearMenuSessionCookie(response);
 
   return response;
 }
@@ -503,8 +573,11 @@ async function proxyToBackend(
     );
   }
 
+  const isMenuRequest =
+    relativePath === "api/menu" || relativePath.startsWith("api/menu/");
+
   const backendUrl =
-    `${getBackendApiUrl()}/${relativePath}${request.nextUrl.search}`;
+    `${isMenuRequest ? getMenuBackendApiUrl() : getBackendApiUrl()}/${relativePath}${request.nextUrl.search}`;
 
   const headers =
     new Headers();
@@ -533,10 +606,22 @@ async function proxyToBackend(
     );
   }
 
-  const token =
-    request.cookies.get(
-      SESSION_COOKIE_NAME
-    )?.value;
+  // The main panel must be authenticated even when accessing the menu API.
+  const panelToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  if (isMenuRequest && !panelToken) {
+    return jsonError(401, "Panel oturumu gerekli.");
+  }
+
+  const token = request.cookies.get(
+    isMenuRequest ? MENU_SESSION_COOKIE_NAME : SESSION_COOKIE_NAME
+  )?.value;
+
+  if (isMenuRequest && !token) {
+    return jsonError(
+      401,
+      "QR Menü oturumu kurulamadı. Panelden çıkış yapıp tekrar giriş yapın."
+    );
+  }
 
   if (token) {
     headers.set(
@@ -640,9 +725,11 @@ async function proxyToBackend(
     backendResponse.status ===
     401
   ) {
-    clearSessionCookie(
-      response
-    );
+    if (isMenuRequest) {
+      clearMenuSessionCookie(response);
+    } else {
+      clearSessionCookie(response);
+    }
   }
 
   return response;
