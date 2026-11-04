@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import {
   usePathname,
@@ -137,15 +138,23 @@ export default function Sidebar() {
     <>
       {/* MOBILE TOP BAR */}
       <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 lg:hidden">
-        <div>
-          <p className="text-sm font-black text-[#082d4e]">
-            LEZZET DÖNER
-          </p>
-
-          <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-orange-500">
+        <Link
+          href="/"
+          aria-label="1 Lezzet Döner ana panel"
+          className="flex items-center gap-3"
+        >
+          <Image
+            src="/lezzet-doner-logo-hd.png"
+            alt="1 Lezzet Döner"
+            width={383}
+            height={179}
+            priority
+            className="h-10 w-auto object-contain"
+          />
+          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-orange-600">
             Yönetim Paneli
-          </p>
-        </div>
+          </span>
+        </Link>
 
         <button
           type="button"
@@ -180,16 +189,26 @@ export default function Sidebar() {
         }`}
       >
         {/* BRAND */}
-        <div className="flex h-20 items-center justify-between border-b border-white/10 px-5">
-          <div>
-            <p className="text-lg font-black">
-              LEZZET DÖNER
-            </p>
-
-            <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-orange-400">
+        <div className="flex min-h-[124px] items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+          <Link
+            href="/"
+            aria-label="1 Lezzet Döner yönetim ana sayfası"
+            className="group flex min-w-0 flex-col items-start gap-2"
+          >
+            <span className="inline-flex rounded-xl bg-[#fffaf5] px-3 py-1.5 shadow-sm ring-1 ring-white/15 transition group-hover:ring-orange-300/60">
+              <Image
+                src="/lezzet-doner-logo-hd.png"
+                alt="1 Lezzet Döner"
+                width={383}
+                height={179}
+                priority
+                className="h-[64px] w-auto object-contain"
+              />
+            </span>
+            <span className="ml-1 text-[9px] font-semibold uppercase tracking-[0.20em] text-orange-300">
               Yönetim Paneli
-            </p>
-          </div>
+            </span>
+          </Link>
 
           <button
             type="button"

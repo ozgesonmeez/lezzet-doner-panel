@@ -9,6 +9,8 @@ import {
   useRouter,
 } from "next/navigation";
 
+import Image from "next/image";
+
 import {
   Eye,
   EyeOff,
@@ -31,10 +33,7 @@ export default function LoginPage() {
     login,
   } = useAuth();
 
-  const [email, setEmail] =
-    useState(
-      "admin@lezzetdoner.local"
-    );
+  const [email, setEmail] = useState("");
 
   const [
     password,
@@ -102,12 +101,18 @@ export default function LoginPage() {
     <main className="min-h-screen bg-[#f7f8fa] lg:grid lg:grid-cols-2">
       {/* LEFT */}
       <section className="hidden bg-[#082d4e] p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div>
-          <p className="text-2xl font-black">
-            LEZZET DÖNER
-          </p>
-
-          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.22em] text-orange-400">
+        <div className="flex flex-col items-start gap-3">
+          <div className="inline-flex rounded-2xl bg-[#fffaf5] px-4 py-2 shadow-xl shadow-black/10 ring-1 ring-white/20">
+            <Image
+              src="/lezzet-doner-logo-hd.png"
+              alt="1 Lezzet Döner"
+              width={383}
+              height={179}
+              priority
+              className="h-[94px] w-auto object-contain"
+            />
+          </div>
+          <p className="pl-1 text-xs font-semibold uppercase tracking-[0.22em] text-orange-300">
             Yönetim Paneli
           </p>
         </div>
@@ -142,12 +147,16 @@ export default function LoginPage() {
       <section className="flex min-h-screen items-center justify-center p-4 sm:p-8">
         <div className="w-full max-w-md">
           {/* MOBILE BRAND */}
-          <div className="mb-8 text-center lg:hidden">
-            <p className="text-xl font-black text-[#082d4e]">
-              LEZZET DÖNER
-            </p>
-
-            <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500">
+          <div className="mb-8 flex flex-col items-center gap-1.5 text-center lg:hidden">
+            <Image
+              src="/lezzet-doner-logo-hd.png"
+              alt="1 Lezzet Döner"
+              width={383}
+              height={179}
+              priority
+              className="h-[72px] w-auto object-contain"
+            />
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500">
               Yönetim Paneli
             </p>
           </div>
