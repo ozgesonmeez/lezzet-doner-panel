@@ -102,14 +102,14 @@ export default function LoginPage() {
       {/* LEFT */}
       <section className="hidden bg-[#082d4e] p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="flex flex-col items-start gap-3">
-          <div className="inline-flex rounded-2xl bg-[#fffaf5] px-4 py-2 shadow-xl shadow-black/10 ring-1 ring-white/20">
+          <div className="inline-flex items-center">
             <Image
-              src="/lezzet-doner-logo-hd.png"
+              src="/lezzet-doner-logo-koyu-zemin.png"
               alt="1 Lezzet Döner"
               width={383}
               height={179}
               priority
-              className="h-[94px] w-auto object-contain"
+              className="h-[112px] w-auto object-contain"
             />
           </div>
           <p className="pl-1 text-xs font-semibold uppercase tracking-[0.22em] text-orange-300">

@@ -195,14 +195,14 @@ export default function Sidebar() {
             aria-label="1 Lezzet Döner yönetim ana sayfası"
             className="group flex min-w-0 flex-col items-start gap-2"
           >
-            <span className="inline-flex rounded-xl bg-[#fffaf5] px-3 py-1.5 shadow-sm ring-1 ring-white/15 transition group-hover:ring-orange-300/60">
+            <span className="inline-flex items-center transition-opacity group-hover:opacity-90">
               <Image
-                src="/lezzet-doner-logo-hd.png"
+                src="/lezzet-doner-logo-koyu-zemin.png"
                 alt="1 Lezzet Döner"
                 width={383}
                 height={179}
                 priority
-                className="h-[64px] w-auto object-contain"
+                className="h-[78px] w-auto object-contain"
               />
             </span>
             <span className="ml-1 text-[9px] font-semibold uppercase tracking-[0.20em] text-orange-300">
