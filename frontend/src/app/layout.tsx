@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
+import { restaurantName, siteUrl } from "@/lib/restaurant-seo";
 
 import { AuthProvider } from "@/context/AuthContext";
 import LayoutController from "@/components/LayoutController";
@@ -18,8 +19,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "1 Lezzet Döner",
-  description: "1 Lezzet Döner - Bursa Kestel",
+  metadataBase: siteUrl,
+  title: restaurantName,
+  robots: { index: false, follow: false },
+  icons: { icon: { url: "/favicon.ico", sizes: "64x64", type: "image/x-icon" } },
 };
 
 export default function RootLayout({
