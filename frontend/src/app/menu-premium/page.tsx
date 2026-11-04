@@ -144,7 +144,7 @@ export default function PremiumMenuPage(){
 </div>
 
 
-<div className="ld-logo-watermark ld-watermark-surface">
+<div>
 <section className="relative flex min-h-[175px] items-center justify-center px-5 py-8 sm:min-h-[205px] sm:px-10 sm:py-10">
   <div className="relative z-10 mx-auto w-full max-w-7xl">
     <a

@@ -30,7 +30,7 @@ export default function PremiumFeatured({ products, onOpen }: { products: MenuPr
   const featured = products.filter(p => p.featured);
   const display = (featured.length ? featured : products).slice(0, 4);
   return (
-    <section className="ld-watermark-surface bg-[#fffaf4] px-0 py-4 sm:py-6">
+    <section className="px-0 py-4 sm:py-6">
       <div className="mx-auto max-w-7xl">
 
         {display.length === 0 ? (

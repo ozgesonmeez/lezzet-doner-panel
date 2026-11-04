@@ -622,7 +622,7 @@ export default function PublicMenuPage() {
       {/* ABOUT */}
       <section
         id="hakkimizda"
-        className="ld-watermark-surface bg-[#FFF1E5] px-5 py-12 sm:px-6 sm:py-20"
+        className="px-5 py-12 sm:px-6 sm:py-20"
       >
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#941B32] sm:text-xs">
