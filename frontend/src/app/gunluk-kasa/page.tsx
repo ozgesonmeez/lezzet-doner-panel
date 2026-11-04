@@ -57,10 +57,10 @@ type ExpenseForm = {
 const suggestedChannels = [
   "Nakit",
   "Kredi Kartı",
-  "Yemeksepeti",
-  "Trendyol",
-  "Migros Yemek",
-  "Getir",
+  "YemekSepeti",
+  "Metropol",
+  "IBAN",
+  "Veresiye",
 ];
 
 function getTodayInIstanbul() {
