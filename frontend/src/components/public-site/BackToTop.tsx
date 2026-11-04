@@ -1,9 +1,11 @@
 "use client";
 
+import { usePublicLocale } from "@/components/public-site/Locale";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function BackToTop({ focusTop }: { focusTop: () => void }) {
+  const { t } = usePublicLocale();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function BackToTop({ focusTop }: { focusTop: () => void }) {
   return (
     <button
       type="button"
-      aria-label="Sayfanın başına dön"
+      aria-label={t("Sayfanın başına dön")}
       onClick={scrollToTop}
       className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] z-50 grid size-11 place-items-center rounded-full bg-[#2b1d19] text-white shadow-md motion-safe:transition-transform motion-safe:hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#92182e] md:right-6 md:bottom-6"
     >

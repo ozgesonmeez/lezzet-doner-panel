@@ -1,3 +1,6 @@
+"use client";
+
+import { usePublicLocale } from "@/components/public-site/Locale";
 import {
   ArrowUpRight,
   Coffee,
@@ -51,6 +54,7 @@ export default function PremiumCategories({
   categories: MenuCategory[];
   onSelect: (id: number) => void;
 }) {
+  const { t, categoryName } = usePublicLocale();
   return (
     <section
       id="lezzetler"
@@ -63,15 +67,15 @@ export default function PremiumCategories({
           </p>
 
           <h2 data-scroll-reveal="heading" className="mt-3 font-serif text-3xl font-semibold tracking-tight text-[#2c1d18] sm:mt-4 sm:text-6xl">
-            Lezzetlerimizi keşfedin.
+            {t("Lezzetlerimizi keşfedin.")}
           </h2>
           <div data-scroll-reveal="fade" aria-hidden="true" className="mx-auto mt-3 h-[2px] w-12 rounded-full bg-[#a91d38] sm:mt-5 sm:w-14" />
           <p className="mx-auto mt-3 text-[10px] font-semibold uppercase tracking-[.22em] text-[#a98569]">
-            Özenle hazırlanan lezzetler
+            {t("Özenle hazırlanan lezzetler")}
           </p>
 
           <p data-scroll-reveal="fade" className="mx-auto mt-2 max-w-xl text-xs leading-5 text-[#8d7668] sm:mt-4 sm:text-sm sm:leading-7">
-            Damak tadınıza uygun kategoriyi seçin, favori lezzetinizi keşfedin.
+            {t("Damak tadınıza uygun kategoriyi seçin, favori lezzetinizi keşfedin.")}
           </p>
         </div>
 
@@ -94,7 +98,7 @@ export default function PremiumCategories({
                   {photo ? (
                     <img
                       src={photo}
-                      alt={category.name}
+                      alt={categoryName(category)}
                       loading="lazy"
                       className="h-full w-full object-contain p-3 transition-transform sm:p-4 duration-500 group-hover:scale-105"
                     />
@@ -109,13 +113,13 @@ export default function PremiumCategories({
                   )}
 
                   <span className="absolute bottom-3 left-3 rounded-full border border-white/70 bg-white/90 px-3 py-1 text-[10px] font-bold text-[#71594c] shadow-sm">
-                    {category.products.length} ürün
+                    {category.products.length} {t("ürün")}
                   </span>
                 </div>
 
                 <div className="flex min-h-[66px] items-center justify-between gap-2 border-t border-[#edddcd] px-3 py-3 sm:min-h-[100px] sm:px-5 sm:py-4">
                   <h3 className="font-serif text-sm font-bold leading-snug text-[#30201b] sm:text-xl">
-                    {category.name}
+                    {categoryName(category)}
                   </h3>
 
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#f8eeee] text-[#92182e] transition-colors group-hover:bg-[#92182e] group-hover:text-white">

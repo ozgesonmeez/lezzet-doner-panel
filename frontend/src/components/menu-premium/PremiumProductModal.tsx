@@ -1,5 +1,6 @@
 "use client";
 
+import { LanguageSelector, usePublicLocale } from "@/components/public-site/Locale";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import type { MenuProduct } from "./PremiumCategories";
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export default function PremiumProductModal({ product, onClose }: Props) {
+  const { t, productName, productDescription, variantName } = usePublicLocale();
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function PremiumProductModal({ product, onClose }: Props) {
       >
         <button
           type="button"
-          aria-label="Kapat"
+          aria-label={t("Kapat")}
           onClick={onClose}
           className="absolute right-4 top-4 z-20 flex size-10 items-center justify-center rounded-full border border-[#e5d8c7] bg-[#fffdf9] text-[#49372e] shadow-sm transition hover:bg-[#eee4d6]"
         >
@@ -52,37 +54,40 @@ export default function PremiumProductModal({ product, onClose }: Props) {
             {product.imageUrl ? (
               <img
                 src={product.imageUrl}
-                alt={product.name}
+                alt={productName(product)}
                 className="max-h-[360px] w-full object-contain p-5 md:max-h-[480px] md:p-9"
               />
             ) : (
               <span className="text-sm text-[#9b8976]">
-                Ürün görseli bulunmuyor
+                {t("Ürün görseli bulunmuyor")}
               </span>
             )}
           </div>
 
           <div className="flex flex-col p-6 sm:p-9 md:justify-center">
-            <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9b7c57]">
-              1 LEZZET DÖNER · ÖZEL SEÇKİ
-            </p>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 pr-8">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9b7c57]">
+                {t("1 LEZZET DÖNER · ÖZEL SEÇKİ")}
+              </p>
+              <LanguageSelector />
+            </div>
 
             <h2
               id="premium-product-title"
               className="pr-8 font-serif text-[28px] font-medium leading-tight text-[#36271f] sm:text-[34px]"
             >
-              {product.name}
+              {productName(product)}
             </h2>
 
             {product.description && (
               <p className="mt-4 text-sm leading-7 text-[#8c7b6c]">
-                {product.description}
+                {productDescription(product)}
               </p>
             )}
 
             {product.soldOut && (
               <p className="mt-4 text-sm font-semibold text-[#92182e]">
-                Bu ürün şu anda tükenmiştir.
+                {t("Bu ürün şu anda tükenmiştir.")}
               </p>
             )}
 
@@ -91,7 +96,7 @@ export default function PremiumProductModal({ product, onClose }: Props) {
             {product.variants.length > 0 && (
               <>
                 <p className="mb-3 text-sm font-medium text-[#4b392d]">
-                  Porsiyon seçenekleri
+                  {t("Porsiyon seçenekleri")}
                 </p>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -110,7 +115,7 @@ export default function PremiumProductModal({ product, onClose }: Props) {
                         }`}
                       >
                         <span className="block text-sm font-medium text-[#47352a]">
-                          {variant.name}
+                          {variantName(variant.name)}
                         </span>
                         <span className="mt-1 block text-sm font-semibold text-[#806448]">
                           {price(variant.price)}
@@ -122,36 +127,36 @@ export default function PremiumProductModal({ product, onClose }: Props) {
               </>
             )}
 
-            <div className="mt-5 divide-y divide-[#e3d7c9] rounded-2xl border border-[#e3d7c9] bg-[#fffdf9] px-4" aria-label="Ürün bilgilendirmesi">
+            <div className="mt-5 divide-y divide-[#e3d7c9] rounded-2xl border border-[#e3d7c9] bg-[#fffdf9] px-4" aria-label={t("Ürün bilgilendirmesi")}>
               <details className="group">
                 <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-semibold text-[#47352a] [&::-webkit-details-marker]:hidden">
-                  İçindekiler
+                  {t("İçindekiler")}
                   <span aria-hidden="true" className="text-[#9c7953] motion-safe:transition-transform group-open:rotate-180">⌄</span>
                 </summary>
                 <p className="pb-3 text-sm leading-6 text-[#806f60]">
-                  Bu ürün için doğrulanmış bir içerik listesi henüz paylaşılmadı.
+                  {t("Bu ürün için doğrulanmış bir içerik listesi henüz paylaşılmadı.")}
                 </p>
               </details>
               <details className="group">
                 <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-semibold text-[#47352a] [&::-webkit-details-marker]:hidden">
-                  Alerjen Bilgilendirmesi
+                  {t("Alerjen Bilgilendirmesi")}
                   <span aria-hidden="true" className="text-[#9c7953] motion-safe:transition-transform group-open:rotate-180">⌄</span>
                 </summary>
                 <div className="pb-3 text-sm leading-6 text-[#806f60]">
-                  <p>Alerjen bilgileri kullanılan ekmek, sos ve diğer malzemelere göre değişebilir. Gıda alerjiniz varsa sipariş vermeden önce işletmemizle iletişime geçiniz.</p>
-                  <a href="tel:+905423941616" className="mt-2 inline-flex min-h-11 items-center font-semibold text-[#92182e] underline underline-offset-4">İşletmeyi ara: 0542 394 16 16</a>
+                  <p>{t("Alerjen bilgileri kullanılan ekmek, sos ve diğer malzemelere göre değişebilir. Gıda alerjiniz varsa sipariş vermeden önce işletmemizle iletişime geçiniz.")}</p>
+                  <a href="tel:+905423941616" className="mt-2 inline-flex min-h-11 items-center font-semibold text-[#92182e] underline underline-offset-4">{t("İşletmeyi ara: 0542 394 16 16")}</a>
                 </div>
               </details>
             </div>
 
             <div className="mt-7">
               <p className="text-[10px] uppercase tracking-[0.16em] text-[#998572]">
-                {product.variants.length ? "Seçilen porsiyon" : "Ürün fiyatı"}
+                {product.variants.length ? t("Seçilen porsiyon") : t("Ürün fiyatı")}
               </p>
               <p className="mt-1 font-serif text-2xl font-semibold text-[#3e2e24]">
                 {currentPrice != null
                   ? price(currentPrice)
-                  : "Fiyat bilgisi yok"}
+                  : t("Fiyat bilgisi yok")}
               </p>
             </div>
 
@@ -160,7 +165,7 @@ export default function PremiumProductModal({ product, onClose }: Props) {
               onClick={onClose}
               className="mt-6 w-full rounded-full bg-[#3d2b24] px-6 py-4 text-sm font-semibold text-[#fff9ee] transition hover:bg-[#513a30]"
             >
-              Menüye Dön
+              {t("Menüye Dön")}
             </button>
           </div>
         </div>

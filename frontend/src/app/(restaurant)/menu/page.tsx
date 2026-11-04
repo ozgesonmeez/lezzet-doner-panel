@@ -1,5 +1,7 @@
-
 "use client";
+
+import DeveloperSignature from "@/components/public-site/DeveloperSignature";
+import { LanguageSelector, usePublicLocale } from "@/components/public-site/Locale";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -58,11 +60,12 @@ function ProductCard({
   product: MenuProduct;
   onOpen: (product: MenuProduct) => void;
 }) {
+  const { t, productName, productDescription, variantName } = usePublicLocale();
   return (
     <button
       type="button"
       onClick={() => onOpen(product)}
-      aria-label={`${product.name} ürün detaylarını incele`}
+      aria-label={t("{name} ürün detaylarını incele").replace("{name}", productName(product))}
       data-scroll-reveal="card"
       className="group flex w-full min-h-[152px] overflow-hidden rounded-[22px] border border-[#E8DDD4] bg-white text-left shadow-[0_8px_24px_rgba(58,33,28,0.045)] transition duration-300 hover:border-[#D9C7BC] hover:shadow-[0_12px_30px_rgba(58,33,28,0.10)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#941B32] sm:flex-col sm:rounded-[28px] sm:hover:-translate-y-1"
     >
@@ -70,7 +73,7 @@ function ProductCard({
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
-            alt={product.name}
+            alt={productName(product)}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-contain p-1 transition-transform duration-500 group-hover:scale-[1.04] sm:p-2"
           />
@@ -84,7 +87,7 @@ function ProductCard({
               />
             </div>
             <span className="hidden text-[11px] font-semibold text-[#A68C80] sm:block">
-              Görsel yakında
+              {t("Görsel yakında")}
             </span>
           </div>
         )}
@@ -92,7 +95,7 @@ function ProductCard({
         {product.soldOut && (
           <div className="absolute inset-0 flex items-center justify-center bg-[#FFFCF8]/80 backdrop-blur-[2px]">
             <span className="rounded-full bg-[#941B32] px-3 py-2 text-[10px] font-black text-white sm:px-5 sm:text-sm">
-              TÜKENDİ
+              {t("TÜKENDİ")}
             </span>
           </div>
         )}
@@ -104,24 +107,24 @@ function ProductCard({
             <div className="mb-2 flex flex-wrap gap-1.5">
               {product.newProduct && (
                 <span className="rounded-full bg-[#941B32] px-2.5 py-1 text-[9px] font-black text-white">
-                  YENİ
+                  {t("YENİ")}
                 </span>
               )}
               {product.featured && (
                 <span className="rounded-full bg-[#FFF4DF] px-2.5 py-1 text-[9px] font-black text-[#9A601C]">
-                  ÖNE ÇIKAN
+                  {t("ÖNE ÇIKAN")}
                 </span>
               )}
             </div>
           )}
 
           <h4 className="text-[14px] font-black leading-snug tracking-[-0.02em] text-[#291C1D] min-[390px]:text-[16px] sm:text-xl">
-            {product.name}
+            {productName(product)}
           </h4>
 
           {product.description && (
             <p className="mt-1.5 line-clamp-2 text-[11px] leading-[1.55] text-[#8D7770] sm:mt-2 sm:text-sm sm:leading-6">
-              {product.description}
+              {productDescription(product)}
             </p>
           )}
         </div>
@@ -135,7 +138,7 @@ function ProductCard({
                   className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1"
                 >
                   <span className="rounded-md bg-[#F8F2ED] px-2 py-1 text-[11px] font-semibold text-[#75615B] sm:text-sm">
-                    {variant.name}
+                    {variantName(variant.name)}
                   </span>
                   <strong className="whitespace-nowrap text-[14px] font-black tracking-tight text-[#941B32] sm:text-lg">
                     {formatPrice(variant.price)}
@@ -160,7 +163,7 @@ function ProductCard({
         </div>
 
         <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-[#941B32] sm:text-xs">
-          Ürünü İncele <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+          {t("Ürünü İncele")} <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
         </div>
       </div>
     </button>
@@ -174,6 +177,7 @@ function ProductDetailModal({
   product: MenuProduct;
   onClose: () => void;
 }) {
+  const { t, productName, productDescription, variantName } = usePublicLocale();
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
 
@@ -211,7 +215,7 @@ function ProductDetailModal({
         <button
           type="button"
           onClick={onClose}
-          aria-label="Ürün detayını kapat"
+          aria-label={t("Ürün detayını kapat")}
           className={`absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#291C1D] shadow-md transition hover:bg-[#F5E8E2] ${product.imageUrl ? "top-4" : "top-3 sm:top-5"}`}
         >
           <X size={21} />
@@ -221,13 +225,13 @@ function ProductDetailModal({
           <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-[#F3ECE6] sm:aspect-[16/9]">
             <img
               src={product.imageUrl}
-              alt={product.name}
+              alt={productName(product)}
               className="h-full w-full object-contain"
             />
 
             {product.soldOut && (
               <span className="absolute bottom-4 left-4 rounded-full bg-[#941B32] px-4 py-2 text-xs font-black text-white">
-                TÜKENDİ
+                {t("TÜKENDİ")}
               </span>
             )}
           </div>
@@ -237,33 +241,34 @@ function ProductDetailModal({
           <div className="flex flex-wrap gap-2">
             {product.newProduct && (
               <span className="rounded-full bg-[#941B32] px-3 py-1.5 text-[10px] font-black text-white">
-                YENİ
+                {t("YENİ")}
               </span>
             )}
 
             {product.featured && (
               <span className="rounded-full bg-[#FFF0D6] px-3 py-1.5 text-[10px] font-black text-[#9A601C]">
-                ÖNE ÇIKAN
+                {t("ÖNE ÇIKAN")}
               </span>
             )}
           </div>
 
           {!product.imageUrl && product.soldOut && (
             <span className="mt-3 inline-flex rounded-full bg-[#941B32] px-3 py-1.5 text-[10px] font-black text-white">
-              TÜKENDİ
+              {t("TÜKENDİ")}
             </span>
           )}
 
+          <LanguageSelector />
           <h2
             id="product-detail-title"
             className="mt-3 text-2xl font-black tracking-tight sm:text-3xl"
           >
-            {product.name}
+            {productName(product)}
           </h2>
 
           {product.description && (
             <p className="mt-4 text-sm leading-7 text-[#806B65] sm:text-base">
-              {product.description}
+              {productDescription(product)}
             </p>
           )}
 
@@ -271,7 +276,7 @@ function ProductDetailModal({
             {product.variants.length > 0 ? (
               <>
                 <p className="mb-4 text-xs font-black uppercase tracking-[0.15em] text-[#A3263F]">
-                  Gramaj ve Fiyat Seçenekleri
+                  {t("Gramaj ve Fiyat Seçenekleri")}
                 </p>
 
                 <div className="space-y-3">
@@ -281,7 +286,7 @@ function ProductDetailModal({
                       className="flex items-center justify-between gap-4 rounded-2xl border border-[#E9DFD6] bg-white px-5 py-4"
                     >
                       <span className="font-bold text-[#594744]">
-                        {variant.name}
+                        {variantName(variant.name)}
                       </span>
 
                       <strong className="text-lg font-black text-[#941B32]">
@@ -294,7 +299,7 @@ function ProductDetailModal({
             ) : product.basePrice !== null ? (
               <div className="flex items-end justify-between gap-4">
                 <span className="text-sm font-semibold text-[#806B65]">
-                  Ürün Fiyatı
+                  {t("Ürün Fiyatı")}
                 </span>
 
                 <strong className="text-3xl font-black text-[#941B32]">
@@ -313,7 +318,7 @@ function ProductDetailModal({
             onClick={onClose}
             className="mt-7 w-full rounded-2xl bg-[#941B32] px-6 py-4 text-sm font-black text-white transition hover:bg-[#761327]"
           >
-            Menüye Dön
+            {t("Menüye Dön")}
           </button>
         </div>
       </section>
@@ -322,6 +327,7 @@ function ProductDetailModal({
 }
 
 export default function PublicMenuPage() {
+  const { t, categoryName, categoryDescription, productName, productDescription } = usePublicLocale();
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [search, setSearch] = useState("");
@@ -375,7 +381,7 @@ export default function PublicMenuPage() {
     if (term) {
       return categories.flatMap((category) =>
         category.products.filter((product) =>
-          `${product.name} ${product.description ?? ""}`
+          `${product.name} ${product.description ?? ""} ${productName(product)} ${productDescription(product) ?? ""}`
             .toLocaleLowerCase("tr-TR")
             .includes(term)
         )
@@ -385,7 +391,7 @@ export default function PublicMenuPage() {
     return activeCategory === null
       ? categories.flatMap((category) => category.products)
       : selectedCategory?.products ?? [];
-  }, [activeCategory, categories, selectedCategory, search]);
+  }, [activeCategory, categories, selectedCategory, search, productName, productDescription]);
 
   const totalProducts = categories.reduce(
     (sum, category) => sum + category.products.length,
@@ -412,25 +418,28 @@ export default function PublicMenuPage() {
 
           <nav className="hidden items-center gap-8 text-sm font-semibold text-[#5F4C4D] md:flex">
             <a href="#anasayfa" className="hover:text-[#941B32]">
-              Ana Sayfa
+              {t("Ana Sayfa")}
             </a>
 
             <a href="#menu" className="hover:text-[#941B32]">
-              Menümüz
+              {t("Menümüz")}
             </a>
 
             <a href="#hakkimizda" className="hover:text-[#941B32]">
-              Hakkımızda
+              {t("Hakkımızda")}
             </a>
           </nav>
 
+          <div className="flex items-center gap-1 sm:gap-3">
           <a
             href="#menu"
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#941B32] px-3 py-2.5 text-[10px] font-bold text-white transition hover:bg-[#761327] min-[390px]:px-4 sm:gap-2 sm:px-5 sm:py-3 sm:text-xs"
           >
-            Menüyü İncele
+            {t("Menüyü İncele")}
             <ArrowRight size={13} />
           </a>
+          <LanguageSelector />
+          </div>
         </div>
       </header>
 
@@ -442,13 +451,13 @@ export default function PublicMenuPage() {
             <Flame size={13} /> 1 LEZZET DÖNER
           </span>
           <h1 className="mt-3 max-w-3xl text-[29px] font-black leading-[1.14] tracking-tight min-[390px]:text-[34px] sm:mt-5 sm:text-5xl lg:text-6xl">
-            Gerçek Döner. <span className="text-[#F3BE94]">Gerçek Lezzet.</span>
+            {t("Gerçek Döner.")} <span className="text-[#F3BE94]">{t("Gerçek Lezzet.")}</span>
           </h1>
           <div className="mt-3 flex items-center gap-2 text-xs font-medium text-white/80 sm:mt-5 sm:text-sm">
             <MapPin size={14} /> Bursa · Kestel
           </div>
           <p className="mt-3 hidden max-w-xl text-sm leading-7 text-white/75 sm:block">
-            Tavuk dönerden yaprak et dönere, sevdiğin lezzetleri keşfet. Güncel menümüz ve fiyatlarımız bir dokunuş uzağında.
+            {t("Tavuk dönerden yaprak et dönere, sevdiğin lezzetleri keşfet. Güncel menümüz ve fiyatlarımız bir dokunuş uzağında.")}
           </p>
         </div>
       </section>
@@ -456,10 +465,10 @@ export default function PublicMenuPage() {
       {/* RESTAURANT STRIP */}
       <div className="border-b border-[#EDE4DC] bg-[#FFFCF8]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-2.5 sm:px-8 sm:py-4">
-          <span className="text-[11px] font-semibold text-[#745F5A] sm:text-sm">Taze lezzetler, güncel fiyatlar</span>
+          <span className="text-[11px] font-semibold text-[#745F5A] sm:text-sm">{t("Taze lezzetler, güncel fiyatlar")}</span>
           {!loading && !error && (
             <span className="text-[11px] font-semibold text-[#9C8980] sm:text-xs">
-              {categories.length} kategori · {totalProducts} ürün
+              {categories.length} {t("kategori")} · {totalProducts} {t("ürün")}
             </span>
           )}
         </div>
@@ -473,15 +482,15 @@ export default function PublicMenuPage() {
         <div className="text-center">
           <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.17em] text-[#A3263F] sm:text-xs">
             <Sparkles size={14} />
-            Lezzetlerimizi Keşfet
+            {t("Lezzetlerimizi Keşfet")}
           </span>
 
           <h2 data-scroll-reveal="heading" className="mt-1.5 text-2xl font-black tracking-tight sm:mt-4 sm:text-5xl">
-            Menümüz
+            {t("Menümüz")}
           </h2>
 
           <p data-scroll-reveal="fade" className="mt-1 text-xs leading-6 text-[#8D7770] sm:mt-4 sm:text-base">
-            Favori lezzetlerini keşfet, güncel fiyatları incele.
+            {t("Favori lezzetlerini keşfet, güncel fiyatları incele.")}
           </p>
         </div>
 
@@ -493,8 +502,8 @@ export default function PublicMenuPage() {
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Canın ne çekiyor?"
-            aria-label="Ürün ara"
+            placeholder={t("Canın ne çekiyor?")}
+            aria-label={t("Ürün ara")}
             className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[#AD9B94]"
           />
 
@@ -502,7 +511,7 @@ export default function PublicMenuPage() {
             <button
               type="button"
               onClick={() => setSearch("")}
-              aria-label="Aramayı temizle"
+              aria-label={t("Aramayı temizle")}
               className="text-[#9C8980] hover:text-[#941B32]"
             >
               <X size={18} />
@@ -512,14 +521,14 @@ export default function PublicMenuPage() {
 
         {loading ? (
           <div className="py-20 text-center text-[#8D7770]">
-            Menümüz yükleniyor...
+            {t("Menümüz yükleniyor...")}
           </div>
         ) : error ? (
           <div
             role="alert"
             className="mt-10 rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-700"
           >
-            {error}
+            {t(error)}
           </div>
         ) : (
           <>
@@ -538,7 +547,7 @@ export default function PublicMenuPage() {
                     : "border border-[#E9DFD6] bg-white text-[#65514F] hover:border-[#941B32]"
                 }`}
               >
-                Tüm Ürünler
+                {t("Tüm Ürünler")}
               </button>
               {categories.map((category) => {
                 const active =
@@ -559,7 +568,7 @@ export default function PublicMenuPage() {
                         : "border border-[#E9DFD6] bg-white text-[#65514F] hover:border-[#941B32]"
                     }`}
                   >
-                    {category.name}
+                    {categoryName(category)}
                   </button>
                 );
               })}
@@ -569,24 +578,24 @@ export default function PublicMenuPage() {
             <div className="mt-3 flex items-end justify-between gap-3 border-b border-[#EAE0D7] pb-4 sm:mt-8 sm:gap-4 sm:pb-5">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.15em] text-[#A3263F] sm:text-[11px]">
-                  {search ? "Arama Sonuçları" : activeCategory === null ? "Bütün Lezzetler" : "Seçili Kategori"}
+                  {search ? t("Arama Sonuçları") : activeCategory === null ? t("Bütün Lezzetler") : t("Seçili Kategori")}
                 </p>
 
                 <h3 data-scroll-reveal="heading" className="mt-2 text-xl font-black tracking-tight sm:text-3xl">
                   {search
-                    ? "Bulunan Lezzetler"
-                    : activeCategory === null ? "Tüm Ürünler" : selectedCategory?.name ?? "Ürünler"}
+                    ? t("Bulunan Lezzetler")
+                    : activeCategory === null ? t("Tüm Ürünler") : selectedCategory ? categoryName(selectedCategory) : t("Ürünler")}
                 </h3>
 
                 {!search && selectedCategory?.description && (
                   <p className="mt-1.5 text-xs text-[#907B74] sm:mt-2 sm:text-sm">
-                    {selectedCategory.description}
+                    {categoryDescription(selectedCategory)}
                   </p>
                 )}
               </div>
 
               <span className="shrink-0 rounded-full bg-[#F1E8E0] px-3 py-1.5 text-[10px] font-bold text-[#8A6B61] sm:px-4 sm:py-2 sm:text-xs">
-                {products.length} ürün
+                {products.length} {t("ürün")}
               </span>
             </div>
 
@@ -600,8 +609,8 @@ export default function PublicMenuPage() {
 
                 <p className="mt-4 text-sm text-[#8D7770]">
                   {search
-                    ? "Aradığın lezzeti bulamadık."
-                    : "Bu kategoride henüz ürün bulunmuyor."}
+                    ? t("Aradığın lezzeti bulamadık.")
+                    : t("Bu kategoride henüz ürün bulunmuyor.")}
                 </p>
               </div>
             ) : (
@@ -630,13 +639,11 @@ export default function PublicMenuPage() {
           </p>
 
           <h2 data-scroll-reveal="heading" className="mt-3 text-2xl font-black tracking-tight sm:mt-4 sm:text-4xl">
-            Lezzetli Bir Mola Ver
+            {t("Lezzetli Bir Mola Ver")}
           </h2>
 
           <p data-scroll-reveal="fade" className="mt-4 text-xs leading-7 text-[#79655E] sm:mt-5 sm:text-base sm:leading-8">
-            Tavuk döner, yaprak et döner ve birbirinden lezzetli
-            seçeneklerimizi keşfet. Güncel ürünlerimizi ve fiyatlarımızı
-            menümüzden kolayca inceleyebilirsin.
+            {t("Tavuk döner, yaprak et döner ve birbirinden lezzetli seçeneklerimizi keşfet. Güncel ürünlerimizi ve fiyatlarımızı menümüzden kolayca inceleyebilirsin.")}
           </p>
         </div>
       </section>
@@ -658,6 +665,7 @@ export default function PublicMenuPage() {
             © {new Date().getFullYear()} 1 Lezzet Döner
           </p>
         </div>
+        <DeveloperSignature />
       </footer>
 
       {/* PRODUCT DETAIL MODAL */}

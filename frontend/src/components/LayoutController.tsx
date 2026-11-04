@@ -1,5 +1,6 @@
 "use client";
 
+import { PublicLocale, type Locale } from "@/components/public-site/Locale";
 import { useRef } from "react";
 import BackToTop from "@/components/public-site/BackToTop";
 import ScrollReveal from "@/components/public-site/ScrollReveal";
@@ -12,7 +13,6 @@ export default function LayoutController({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const publicSite = useRef<HTMLDivElement>(null);
 
   const isPublicPage =
     pathname === "/" ||
@@ -21,15 +21,19 @@ export default function LayoutController({
     pathname === "/menu-premium" ||
     pathname.startsWith("/menu-premium/");
 
-  if (isPublicPage) {
+  if (isPublicPage) return children;
+
+  return <AppShell>{children}</AppShell>;
+}
+
+export function PublicSiteLayout({ children, initialLocale }: { children: React.ReactNode; initialLocale: Locale }) {
+  const pathname = usePathname();
+  const publicSite = useRef<HTMLDivElement>(null);
     return (
-      <div ref={publicSite} tabIndex={-1} className="ld-public-site">
+      <PublicLocale initialLocale={initialLocale} scope={publicSite}>
         {children}
         <ScrollReveal key={pathname} scope={publicSite} />
         <BackToTop focusTop={() => publicSite.current?.focus({ preventScroll: true })} />
-      </div>
+      </PublicLocale>
     );
-  }
-
-  return <AppShell>{children}</AppShell>;
 }

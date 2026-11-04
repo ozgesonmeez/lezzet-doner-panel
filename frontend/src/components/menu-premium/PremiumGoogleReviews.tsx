@@ -1,5 +1,6 @@
 "use client";
 
+import { usePublicLocale } from "@/components/public-site/Locale";
 import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
@@ -12,6 +13,17 @@ import {
 const GOOGLE_URL = "https://share.google/9UJEMdHLQSOQDKYZS";
 
 const REVIEW_REFERENCE_DATE = new Date("2026-10-12T12:00:00+03:00");
+
+function reviewDate(originalDate: string, elapsed: boolean, locale: "tr" | "en"): string {
+  const date = elapsed ? dynamicReviewDate(originalDate) : originalDate;
+  if (locale === "tr") return date;
+  return date.replace(/^bir yıl önce$/, "1 year ago")
+    .replace(/(\d+)\s+(gün|hafta|ay|yıl)/g, (_, amount: string, unit: string) => {
+      const label = ({ gün: "day", hafta: "week", ay: "month", yıl: "year" } as Record<string, string>)[unit];
+      return `${amount} ${label}${amount === "1" ? "" : "s"}`;
+    })
+    .replace(/ önce$/, " ago");
+}
 
 function dynamicReviewDate(originalDate: string): string {
   const match = originalDate.match(/^(\\d+)\\s+(gün|hafta|ay|yıl) önce$/);
@@ -45,14 +57,14 @@ function dynamicReviewDate(originalDate: string): string {
 }
 
 const reviews = [
-  { name: "Deniz Ö.", date: "7 ay önce", text: "Yıllardır hem yerinde aynı zamanda sipariş üzerine yemek yediğimiz temiz ,hijyen kurallarına uygun ,hoşgörülü çalışanlarına sahip bir işletme. Olumsuz yorumları görünce şaşırdım aksi hiçbirşeyle karşılaşmadık çünkü kolaylıklar dilerim 💫🙏🏻" },
-  { name: "Alibey Barıtçı", date: "10 ay önce", text: "Usta sizi ilk girdiğinizde mutlu bir tebessümle selamlıyor dönerin lezzetini anlatmaya gerek yok dükkan da aydınlık ve ferah çalışanlar da aynı şekilde güler yüzlü tuvaleti ve masaları da temiz gittiğim güzel mekanlardan biriydi" },
-  { name: "Kağan Vatansever", date: "bir yıl önce", text: "Gittiğim en iyi dönercilerden biri burasıdır yani sipariş veriyorum en fazla 15-20 dakikada kapıda teslimat çok hızlı dönerin tadı şahane herkese öneririm." },
-  { name: "Sevim Meral", date: "5 yıl önce", text: "Gerçekten kesteldeki en güzel hizmet veren müşterinin ne istediğini anlatan temiz güler yüzlü ekip elinize yüreğinize sağlık...." },
-  { name: "Yüsra Zorlu", date: "10 ay önce", text: "gerçekten kestelde memnun kalarak ve lezzetine güvenerek yediğim tek yer burasıdır.Çalışanların güler yüzlülüğü olsun hijyen olsun lezzet olsun hepsi ayrı bir güzel.fiyat açısındanda gayet iyi bir yer bol kazançlarınız olsun" },
-  { name: "Deniz Kılıç", date: "2 gün önce", text: "Haytımda hem bu kadar güzel hemde bu kadar lezzetli bir döner yemedim öğrenci olamama rağmen bu kadar ilgi ve alaka beni değerli hissettirdi" },
-  { name: "Kerem Doğanay", date: "2 hafta önce", text: "Düzenli gelip yiyorum başka yerlerde yiyince midem ağrıyor ama burda hem sıcak bekleme yok çok iyi ilgileniyorlar ve lezzet olarakta bulunmaz bir lezzet" },
-  { name: "nurdan bilir", date: "3 hafta önce", text: "Hayatımda yediğim en güzel döner kaliteli ve çok leziz işletme sahipleri de çok ilgili ve güleryüzlü kesinlikle tavsiye ederim" },
+  { name: "Deniz Ö.", date: "7 ay önce", text: "Yıllardır hem yerinde aynı zamanda sipariş üzerine yemek yediğimiz temiz ,hijyen kurallarına uygun ,hoşgörülü çalışanlarına sahip bir işletme. Olumsuz yorumları görünce şaşırdım aksi hiçbirşeyle karşılaşmadık çünkü kolaylıklar dilerim 💫🙏🏻", english: "We have eaten here and ordered delivery for years. The restaurant is clean, follows hygiene standards, and has considerate staff. I was surprised by the negative reviews because our experience has been different. Wishing you all the best 💫🙏🏻" },
+  { name: "Alibey Barıtçı", date: "10 ay önce", text: "Usta sizi ilk girdiğinizde mutlu bir tebessümle selamlıyor dönerin lezzetini anlatmaya gerek yok dükkan da aydınlık ve ferah çalışanlar da aynı şekilde güler yüzlü tuvaleti ve masaları da temiz gittiğim güzel mekanlardan biriydi", english: "The cook greets you with a smile as soon as you walk in. The döner speaks for itself. The shop is bright and airy, the staff are friendly, and the tables and restroom are clean. One of the nicer places I’ve visited." },
+  { name: "Kağan Vatansever", date: "bir yıl önce", text: "Gittiğim en iyi dönercilerden biri burasıdır yani sipariş veriyorum en fazla 15-20 dakikada kapıda teslimat çok hızlı dönerin tadı şahane herkese öneririm.", english: "One of the best döner places I’ve tried. When I order, it arrives in 15–20 minutes at most. Delivery is fast, the döner tastes great, and I recommend it to everyone." },
+  { name: "Sevim Meral", date: "5 yıl önce", text: "Gerçekten kesteldeki en güzel hizmet veren müşterinin ne istediğini anlatan temiz güler yüzlü ekip elinize yüreğinize sağlık....", english: "Really lovely service in Kestel, with a clean, friendly team that understands what customers want. Thank you for all your hard work." },
+  { name: "Yüsra Zorlu", date: "10 ay önce", text: "gerçekten kestelde memnun kalarak ve lezzetine güvenerek yediğim tek yer burasıdır.Çalışanların güler yüzlülüğü olsun hijyen olsun lezzet olsun hepsi ayrı bir güzel.fiyat açısındanda gayet iyi bir yer bol kazançlarınız olsun", english: "This is the one place in Kestel where I always leave happy and can count on the food tasting good. The staff are friendly, the place is clean, and the food is delicious. The prices are good too. Wishing you continued success." },
+  { name: "Deniz Kılıç", date: "2 gün önce", text: "Haytımda hem bu kadar güzel hemde bu kadar lezzetli bir döner yemedim öğrenci olamama rağmen bu kadar ilgi ve alaka beni değerli hissettirdi", english: "I’ve never had a döner this good and this tasty. Even though I’m not a student, the care and attention made me feel valued." },
+  { name: "Kerem Doğanay", date: "2 hafta önce", text: "Düzenli gelip yiyorum başka yerlerde yiyince midem ağrıyor ama burda hem sıcak bekleme yok çok iyi ilgileniyorlar ve lezzet olarakta bulunmaz bir lezzet", english: "I eat here regularly. My stomach hurts when I eat elsewhere, but here there’s no waiting in the heat, they take good care of you, and the flavor is hard to find elsewhere." },
+  { name: "nurdan bilir", date: "3 hafta önce", text: "Hayatımda yediğim en güzel döner kaliteli ve çok leziz işletme sahipleri de çok ilgili ve güleryüzlü kesinlikle tavsiye ederim", english: "The best döner I’ve ever had. It’s high quality and delicious, and the owners are attentive and friendly. I definitely recommend it." },
 ];
 
 
@@ -75,8 +87,9 @@ function GoogleMark({ size = 24 }: { size?: number }) {
 }
 
 function Stars({ size = 16 }: { size?: number }) {
+  const { t } = usePublicLocale();
   return (
-    <div className="flex items-center gap-1 text-[#D89B39]" aria-label="5 üzerinden 5 yıldız">
+    <div className="flex items-center gap-1 text-[#D89B39]" aria-label={t("5 üzerinden 5 yıldız")}>
       {[1, 2, 3, 4, 5].map((n) => (
         <Star key={n} size={size} fill="currentColor" strokeWidth={1.5}/>
       ))}
@@ -93,6 +106,7 @@ function PreviewCard({
   review: Review;
   onClick: () => void;
 }) {
+  const { t, locale } = usePublicLocale();
   const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
@@ -115,7 +129,7 @@ function PreviewCard({
           </span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-bold text-[#30211d]">{review.name}</span>
-            <span className="mt-1 block text-xs text-[#978174]">{currentTime ? dynamicReviewDate(review.date) : review.date}</span>
+            <span className="mt-1 block text-xs text-[#978174]">{reviewDate(review.date, Boolean(currentTime), locale)}</span>
           </span>
         </div>
         <GoogleMark size={20}/>
@@ -124,12 +138,12 @@ function PreviewCard({
       <div className="mt-6"><Stars size={15}/></div>
 
       <p className="mt-5 line-clamp-5 text-sm leading-7 text-[#5d4a40]">
-        {review.text}
+        {locale === "en" ? review.english : review.text}
       </p>
 
       <div className="mt-auto flex items-center justify-between pt-6">
         <span className="text-[11px] font-semibold text-[#a91432] group-hover:underline">
-          Yorumu öne çıkar
+          {t("Yorumu öne çıkar")}
         </span>
         <Quote size={28} className="text-[#e7d4c3]"/>
       </div>
@@ -138,6 +152,7 @@ function PreviewCard({
 }
 
 export default function PremiumGoogleReviews() {
+  const { t, locale } = usePublicLocale();
   const [today, setToday] = useState(0);
 
   useEffect(() => {
@@ -183,7 +198,7 @@ export default function PremiumGoogleReviews() {
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto] lg:gap-14">
           <div>
             <p className="text-[11px] font-extrabold uppercase tracking-[.27em] text-[#ad102d]">
-              MİSAFİRLERİMİZİN GÖZÜNDEN
+              {t("MİSAFİRLERİMİZİN GÖZÜNDEN")}
             </p>
 
             <h2
@@ -191,13 +206,12 @@ export default function PremiumGoogleReviews() {
               id="yorumlar-baslik"
               className="mt-4 font-serif text-5xl font-semibold leading-[1.05] tracking-tight text-[#2d1d18] sm:text-6xl lg:text-7xl"
             >
-              Lezzetimizin
-              <span className="block italic text-[#ad102d]">izleri.</span>
+              {t("Lezzetimizin")}
+              <span className="block italic text-[#ad102d]">{t("izleri.")}</span>
             </h2>
 
             <p data-scroll-reveal="fade" className="mt-5 max-w-md text-sm leading-7 text-[#79655c]">
-              Misafirlerimizin Google&apos;da paylaştığı gerçek deneyimler.
-              Her yorum bizim için ayrı bir değer.
+              {t("Misafirlerimizin Google'da paylaştığı gerçek deneyimler. Her yorum bizim için ayrı bir değer.")}
             </p>
           </div>
 
@@ -209,7 +223,7 @@ export default function PremiumGoogleReviews() {
                   Google
                 </div>
                 <div className="text-[11px] text-[#8b776d]">
-                  Müşteri değerlendirmeleri
+                  {t("Müşteri değerlendirmeleri")}
                 </div>
               </div>
             </div>
@@ -222,7 +236,7 @@ export default function PremiumGoogleReviews() {
               </div>
               <div className="mt-1"><Stars size={13}/></div>
               <div className="mt-1 text-[11px] text-[#8b776d]">
-                135 değerlendirme
+                {t("135 değerlendirme")}
               </div>
             </div>
           </div>
@@ -238,12 +252,12 @@ export default function PremiumGoogleReviews() {
                 type="button"
                 key={`left-${index}`}
                 onClick={() => go(index - 1)}
-                aria-label="Önceki yoruma geç"
+                aria-label={t("Önceki yoruma geç")}
                 className="absolute left-[-155px] top-1/2 z-0 h-[290px] w-[220px] -translate-y-1/2 scale-[0.88] overflow-hidden rounded-[24px] border border-[#e6d7c9] bg-[#fffaf5] p-4 text-left opacity-60 shadow-sm"
               >
                 <span className="block truncate text-sm font-bold text-[#30211d]">{previous.name}</span>
                 <span className="mt-3 block text-[#d89b39]">★★★★★</span>
-                <p className="mt-4 line-clamp-5 text-sm leading-6 text-[#5d4a40]">{previous.text}</p>
+                <p className="mt-4 line-clamp-5 text-sm leading-6 text-[#5d4a40]">{locale === "en" ? previous.english : previous.text}</p>
               </button>
 
               {/* Sonraki yorum: küçük ve arkada */}
@@ -251,12 +265,12 @@ export default function PremiumGoogleReviews() {
                 type="button"
                 key={`right-${index}`}
                 onClick={() => go(index + 1)}
-                aria-label="Sonraki yoruma geç"
+                aria-label={t("Sonraki yoruma geç")}
                 className="absolute right-[-155px] top-1/2 z-0 h-[290px] w-[220px] -translate-y-1/2 scale-[0.88] overflow-hidden rounded-[24px] border border-[#e6d7c9] bg-[#fffaf5] p-4 text-left opacity-60 shadow-sm"
               >
                 <span className="block truncate text-sm font-bold text-[#30211d]">{following.name}</span>
                 <span className="mt-3 block text-[#d89b39]">★★★★★</span>
-                <p className="mt-4 line-clamp-5 text-sm leading-6 text-[#5d4a40]">{following.text}</p>
+                <p className="mt-4 line-clamp-5 text-sm leading-6 text-[#5d4a40]">{locale === "en" ? following.english : following.text}</p>
               </button>
 
               {/* Ana yorum: büyük ve önde */}
@@ -271,7 +285,7 @@ export default function PremiumGoogleReviews() {
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-sm font-bold text-[#30211d]">{current.name}</h3>
                     <p className="mt-1 text-[11px] text-[#978174]">
-                      {today ? dynamicReviewDate(current.date) : current.date} · Google yorumu
+                      {reviewDate(current.date, Boolean(today), locale)} · {t("Google yorumu")}{locale === "en" && ` · ${t("Çevrilmiş yorum")}`}
                     </p>
                   </div>
                   <GoogleMark size={20}/>
@@ -280,7 +294,7 @@ export default function PremiumGoogleReviews() {
                 <div className="mt-5"><Stars size={16}/></div>
 
                 <p className={`mt-5 font-serif text-lg leading-7 text-[#38261f] ${expanded ? "" : "line-clamp-6"}`}>
-                  {current.text}
+                  {locale === "en" ? current.english : current.text}
                 </p>
 
                 {current.text.length > 190 && (
@@ -289,12 +303,12 @@ export default function PremiumGoogleReviews() {
                     onClick={() => setExpanded(!expanded)}
                     className="mt-3 self-start text-xs font-bold text-[#ad102d] underline"
                   >
-                    {expanded ? "Daha az göster" : "Devamını oku"}
+                    {expanded ? t("Daha az göster") : t("Devamını oku")}
                   </button>
                 )}
 
                 <div className="mt-auto pt-6 text-center text-[10px] font-bold uppercase tracking-widest text-[#a18c7f]">
-                  GERÇEK MÜŞTERİ DENEYİMİ
+                  {t("GERÇEK MÜŞTERİ DENEYİMİ")}
                 </div>
               </article>
             </div>
@@ -329,7 +343,7 @@ export default function PremiumGoogleReviews() {
                   {current.name}
                 </h3>
                 <p className="mt-1 text-xs text-[#978174]">
-                  {today ? dynamicReviewDate(current.date) : current.date} · Google yorumu
+                  {reviewDate(current.date, Boolean(today), locale)} · {t("Google yorumu")}{locale === "en" && ` · ${t("Çevrilmiş yorum")}`}
                 </p>
               </div>
 
@@ -345,7 +359,7 @@ export default function PremiumGoogleReviews() {
                 expanded ? "" : "line-clamp-5"
               }`}
             >
-              {current.text}
+              {locale === "en" ? current.english : current.text}
             </p>
 
             {current.text.length > 190 && (
@@ -354,13 +368,13 @@ export default function PremiumGoogleReviews() {
                 onClick={() => setExpanded(!expanded)}
                 className="mt-4 self-start text-xs font-bold text-[#ad102d] underline underline-offset-4"
               >
-                {expanded ? "Daha az göster" : "Devamını oku"}
+                {expanded ? t("Daha az göster") : t("Devamını oku")}
               </button>
             )}
 
             <div className="mt-auto flex items-center justify-between gap-3 pt-9">
               <span className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#a18c7f]">
-                GERÇEK MÜŞTERİ DENEYİMİ
+                {t("GERÇEK MÜŞTERİ DENEYİMİ")}
               </span>
               <span className="font-serif text-sm italic text-[#ad102d]">
                 1 Lezzet Döner
@@ -380,19 +394,19 @@ export default function PremiumGoogleReviews() {
           <button
             type="button"
             onClick={() => go(index - 1)}
-            aria-label="Önceki yorum"
+            aria-label={t("Önceki yorum")}
             className="flex size-11 items-center justify-center rounded-full border border-[#cbb8a9] text-[#432c25] transition hover:border-[#ad102d] hover:bg-white"
           >
             <ChevronLeft size={21}/>
           </button>
 
-          <div className="flex items-center gap-2" aria-label={`Yorum ${index + 1} / ${reviews.length}`}>
+          <div className="flex items-center gap-2" aria-label={`${t("Yorum")} ${index + 1} / ${reviews.length}`}>
             {reviews.map((review, i) => (
               <button
                 key={`${review.name}-${i}`}
                 type="button"
                 onClick={() => go(i)}
-                aria-label={`${i + 1}. yorumu göster`}
+                aria-label={t("{n}. yorumu göster").replace("{n}", String(i + 1))}
                 aria-current={i === index ? "true" : undefined}
                 className={`h-2 rounded-full transition-all ${
                   i === index
@@ -406,7 +420,7 @@ export default function PremiumGoogleReviews() {
           <button
             type="button"
             onClick={() => go(index + 1)}
-            aria-label="Sonraki yorum"
+            aria-label={t("Sonraki yorum")}
             className="flex size-11 items-center justify-center rounded-full border border-[#cbb8a9] text-[#432c25] transition hover:border-[#ad102d] hover:bg-white"
           >
             <ChevronRight size={21}/>
@@ -416,7 +430,7 @@ export default function PremiumGoogleReviews() {
         <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-[#e4d6ca] pt-8">
           <div>
             <p className="text-sm font-semibold text-[#4b342a]">
-              Misafirlerimizin sözleri bizim için kıymetli.
+              {t("Misafirlerimizin sözleri bizim için kıymetli.")}
             </p>
 
           </div>
@@ -428,7 +442,7 @@ export default function PremiumGoogleReviews() {
             className="inline-flex items-center justify-center gap-3 rounded-full bg-[#ad102d] px-7 py-4 text-sm font-bold text-white shadow-[0_12px_25px_rgba(173,16,45,.15)] transition hover:-translate-y-0.5 hover:bg-[#890c25]"
           >
             <GoogleMark size={20}/>
-            Tüm yorumları Google&apos;da gör
+            {t("Tüm yorumları Google'da gör")}
             <ArrowUpRight size={17}/>
           </a>
         </div>

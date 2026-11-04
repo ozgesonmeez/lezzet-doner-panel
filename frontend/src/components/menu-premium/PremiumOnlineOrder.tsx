@@ -1,5 +1,6 @@
 "use client";
 
+import { usePublicLocale } from "@/components/public-site/Locale";
 import { ArrowUpRight, Bike, MapPin, ConciergeBell } from "lucide-react";
 
 const platforms = [
@@ -16,6 +17,7 @@ const platforms = [
 ];
 
 export default function PremiumOnlineOrder() {
+  const { t } = usePublicLocale();
   return (
     <section
       id="online-siparis"
@@ -25,7 +27,7 @@ export default function PremiumOnlineOrder() {
       <div className="mx-auto max-w-5xl">
         <div className="overflow-hidden rounded-[30px] bg-[#261713] px-6 py-10 text-center text-white shadow-xl sm:px-12 sm:py-14">
           <p className="text-[10px] font-bold uppercase tracking-[.3em] text-[#d5a991]">
-            1 LEZZET DÖNER · ONLINE SİPARİŞ
+            {t("1 LEZZET DÖNER · ONLINE SİPARİŞ")}
           </p>
 
           <h2
@@ -33,11 +35,11 @@ export default function PremiumOnlineOrder() {
             id="online-siparis-baslik"
             className="mt-4 font-serif text-4xl font-semibold sm:text-6xl"
           >
-            Lezzet kapına gelsin.
+            {t("Lezzet kapına gelsin.")}
           </h2>
 
           <p data-scroll-reveal="fade" className="mx-auto mt-4 max-w-md text-sm leading-6 text-[#dcc8bb]">
-            Sevdiğin döner lezzetlerini dilediğin platformdan keşfet.
+            {t("Sevdiğin döner lezzetlerini dilediğin platformdan keşfet.")}
           </p>
 
           <div className="mx-auto mt-9 grid max-w-xl grid-cols-2 gap-3">
@@ -75,7 +77,7 @@ export default function PremiumOnlineOrder() {
                 <div key={platform.name} className={cls}>
                   {content}
                   <span className="text-[10px] text-[#8e7669]">
-                    Bağlantı yakında
+                    {t("Bağlantı yakında")}
                   </span>
                 </div>
               );
@@ -86,11 +88,11 @@ export default function PremiumOnlineOrder() {
         <div className="mt-8 grid grid-cols-3 gap-3 text-center text-[#49372e]">
           <div className="flex flex-col items-center gap-2">
             <Bike size={21} strokeWidth={1.5} />
-            <span className="text-[11px] font-semibold">Kapına teslimat</span>
+            <span className="text-[11px] font-semibold">{t("Kapına teslimat")}</span>
           </div>
           <div className="flex flex-col items-center gap-2">
             <ConciergeBell size={21} strokeWidth={1.5} />
-            <span className="text-[11px] font-semibold">Özenle hazırlanır</span>
+            <span className="text-[11px] font-semibold">{t("Özenle hazırlanır")}</span>
           </div>
           <div className="flex flex-col items-center gap-2">
             <MapPin size={21} strokeWidth={1.5} />

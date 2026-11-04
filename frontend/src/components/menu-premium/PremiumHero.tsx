@@ -1,5 +1,6 @@
 "use client";
 
+import { usePublicLocale } from "@/components/public-site/Locale";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, MapPin } from "lucide-react";
 
@@ -26,12 +27,13 @@ function parseSlides(data: unknown): Slide[] {
 }
 
 export default function PremiumHero({ imageUrl, productName }: Props) {
+  const { t } = usePublicLocale();
   const [slides, setSlides] = useState<Slide[]>([]);
   const [active, setActive] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const localVideos = [
     { id: "video-shawarma", url: "/lezzet-pexels-deneme.mp4", title: "Döner" },
-    { id: "video-tavuk", url: "/lezzet-slider-tavuk.mp4", title: "Tavuk Döner" },
+    { id: "video-tavuk", url: "/lezzet-slider-tavuk.mp4", title: t("Tavuk Döner") },
     { id: "video-shawarma-original", url: "/lezzet-slider-shawarma.mp4", title: "Shawarma" },
   ];
   const totalSlides = localVideos.length + slides.length;
@@ -79,7 +81,7 @@ export default function PremiumHero({ imageUrl, productName }: Props) {
   };
 
   return (
-    <section onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} id="ust" aria-label="1 Lezzet Döner slider" className="relative isolate min-h-[540px] overflow-hidden bg-[#1b100d] text-white md:min-h-[720px]">
+    <section onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} id="ust" aria-label={t("1 Lezzet Döner slider")} className="relative isolate min-h-[540px] overflow-hidden bg-[#1b100d] text-white md:min-h-[720px]">
       {/* Background stays full width at every viewport size. The food image is never edited. */}
       {desktop ? (
         <picture key={current?.id ?? desktop} className="absolute inset-0 -z-20 block h-full w-full">
@@ -100,7 +102,7 @@ export default function PremiumHero({ imageUrl, productName }: Props) {
             playsInline
             preload="auto"
             onEnded={() => change(1)}
-            aria-label={videoSlide.title}
+            aria-label={t(videoSlide.title)}
             className={
               videoSlide.id === "video-shawarma"
                 ? "absolute inset-0 h-full w-full scale-[1.22] object-cover object-[65%_center] md:scale-100 md:object-[center_58%]"
@@ -115,40 +117,40 @@ export default function PremiumHero({ imageUrl, productName }: Props) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-black/35 via-transparent to-black/15" />
       <div className="mx-auto flex min-h-[540px] max-w-7xl flex-col justify-center px-6 pb-28 pt-32 md:min-h-[720px] md:px-12 md:pb-24 md:pt-40">
         <div className="max-w-[540px]">
-          <p className="mb-7 w-fit border-b border-[#d7b08a]/60 pb-3 text-[10px] font-semibold uppercase tracking-[.35em] text-[#f9e5d4]">LEZZETİN İMZASI</p>
+          <p className="mb-7 w-fit border-b border-[#d7b08a]/60 pb-3 text-[10px] font-semibold uppercase tracking-[.35em] text-[#f9e5d4]">{t("LEZZETİN İMZASI")}</p>
           <h1 className="font-serif text-[clamp(2.7rem,10vw,4rem)] font-bold leading-[.96] tracking-[-.05em] md:text-[clamp(3.6rem,6.2vw,6rem)]">
             {(() => {
               const titles = [
-                ["Dönerin", "En Güzel", "Hâli."],
-                ["Her Lokmada", "Ayrı Bir", "Lezzet."],
-                ["Bir Dönerden", "Çok Daha", "Fazlası."],
+                [t("Dönerin"), t("En Güzel"), t("Hâli.")],
+                [t("Her Lokmada"), t("Ayrı Bir"), t("Lezzet.")],
+                [t("Bir Dönerden"), t("Çok Daha"), t("Fazlası.")],
               ];
               const [first, accent, last] = titles[active % titles.length];
               return <>{first}<br/><span className="italic text-[#d70b2c]">{accent}</span><br/>{last}</>;
             })()}
           </h1>
-          <p className="mt-8 max-w-[400px] text-sm leading-7 text-[#f0dfd2] md:text-base">Tavuk dönerden yaprak et dönere, lezzetlerimizi keşfet.</p>
+          <p className="mt-8 max-w-[400px] text-sm leading-7 text-[#f0dfd2] md:text-base">{t("Tavuk dönerden yaprak et dönere, lezzetlerimizi keşfet.")}</p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <a
               href="#menu"
               className="inline-flex items-center gap-3 rounded-full bg-[#b80e30] px-7 py-4 text-sm font-semibold text-white shadow-lg shadow-black/20 transition hover:bg-[#d6183f]"
             >
-              Menüyü Keşfet <ArrowUpRight size={17}/>
+              {t("Menüyü Keşfet")} <ArrowUpRight size={17}/>
             </a>
             <a
               href="#online-siparis"
               className="inline-flex items-center gap-3 rounded-full border border-[#e9c8a9]/70 bg-[#211410]/35 px-7 py-4 text-sm font-semibold text-[#fff4e9] backdrop-blur-sm transition hover:bg-white/10"
             >
-              Online Sipariş <ArrowUpRight size={17}/>
+              {t("Online Sipariş")} <ArrowUpRight size={17}/>
             </a>
           </div>
           <p className="mt-7 flex items-center gap-2 text-xs font-medium tracking-wide text-white"><MapPin size={17} className="text-[#e01c42]"/> Bursa · Kestel</p>
         </div>
       </div>
       {totalSlides > 1 && <>
-        <button type="button" onClick={() => change(-1)} aria-label="Önceki slayt" className="absolute bottom-7 left-6 grid size-11 place-items-center rounded-full border border-white/60 bg-black/35 transition hover:bg-black/70 md:bottom-auto md:top-1/2 md:left-4"><ArrowLeft size={20}/></button>
-        <button type="button" onClick={() => change(1)} aria-label="Sonraki slayt" className="absolute bottom-7 right-6 grid size-11 place-items-center rounded-full border border-white/60 bg-black/35 transition hover:bg-black/70 md:bottom-auto md:top-1/2 md:right-4"><ArrowRight size={20}/></button>
-        <div className="absolute bottom-10 left-1/2 flex -translate-x-1/2 gap-2" aria-label="Slider sayfaları">{[...localVideos, ...slides].map((slide,index) => <button type="button" key={slide.id} onClick={() => setActive(index)} aria-label={`${index+1}. slayta git`} aria-current={active===index ? "true" : undefined} className={`size-2.5 rounded-full ${active===index ? "bg-[#e01c42]" : "bg-white/50"}`}/>)}</div>
+        <button type="button" onClick={() => change(-1)} aria-label={t("Önceki slayt")} className="absolute bottom-7 left-6 grid size-11 place-items-center rounded-full border border-white/60 bg-black/35 transition hover:bg-black/70 md:bottom-auto md:top-1/2 md:left-4"><ArrowLeft size={20}/></button>
+        <button type="button" onClick={() => change(1)} aria-label={t("Sonraki slayt")} className="absolute bottom-7 right-6 grid size-11 place-items-center rounded-full border border-white/60 bg-black/35 transition hover:bg-black/70 md:bottom-auto md:top-1/2 md:right-4"><ArrowRight size={20}/></button>
+        <div className="absolute bottom-10 left-1/2 flex -translate-x-1/2 gap-2" aria-label={t("Slider sayfaları")}>{[...localVideos, ...slides].map((slide,index) => <button type="button" key={slide.id} onClick={() => setActive(index)} aria-label={t("{n}. slayta git").replace("{n}", String(index + 1))} aria-current={active===index ? "true" : undefined} className={`size-2.5 rounded-full ${active===index ? "bg-[#e01c42]" : "bg-white/50"}`}/>)}</div>
       </>}
     </section>
   );

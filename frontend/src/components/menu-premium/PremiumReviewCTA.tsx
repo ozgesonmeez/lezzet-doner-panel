@@ -1,3 +1,6 @@
+"use client";
+
+import { usePublicLocale } from "@/components/public-site/Locale";
 import { ArrowUpRight, Star } from "lucide-react";
 
 const reviewUrl = "https://g.page/r/CZPNeDrTEWn3EBM/review";
@@ -15,9 +18,10 @@ function GoogleLogo() {
 }
 
 export default function PremiumReviewCTA() {
+  const { t } = usePublicLocale();
   return (
     <section
-      aria-label="Google değerlendirme"
+      aria-label={t("Google değerlendirme")}
       className="bg-transparent px-5 pb-12 sm:px-10 sm:pb-16"
     >
       <div className="mx-auto max-w-2xl rounded-[28px] border border-[#d9c8ad] bg-[#faf6ee] px-6 py-8 text-center shadow-[0_12px_40px_rgba(72,48,29,0.06)] sm:px-12 sm:py-10">
@@ -25,7 +29,7 @@ export default function PremiumReviewCTA() {
         <div className="flex items-center justify-center gap-3">
           <span className="h-px min-w-5 flex-1 bg-[#c7ad83]" />
           <span className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#96734b] sm:text-[10px] sm:tracking-[0.2em]">
-            MİSAFİRLERİMİZİN GÖZÜNDEN
+            {t("MİSAFİRLERİMİZİN GÖZÜNDEN")}
           </span>
           <span className="h-px min-w-5 flex-1 bg-[#c7ad83]" />
         </div>
@@ -50,12 +54,11 @@ export default function PremiumReviewCTA() {
         <div className="my-7 h-px bg-[#e5d8c7]" />
 
         <h2 data-scroll-reveal="heading" className="mx-auto max-w-lg font-serif text-[26px] italic leading-[1.3] text-[#382820] sm:text-[34px]">
-          Lezzetimizin hikâyesine siz de bir iz bırakın.
+          {t("Lezzetimizin hikâyesine siz de bir iz bırakın.")}
         </h2>
 
         <p data-scroll-reveal="fade" className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#867466]">
-          Deneyiminizi paylaşarak 1 Lezzet Döner ailesinin
-          hikâyesine ortak olun.
+          {t("Deneyiminizi paylaşarak 1 Lezzet Döner ailesinin hikâyesine ortak olun.")}
         </p>
 
         <a
@@ -64,7 +67,7 @@ export default function PremiumReviewCTA() {
           rel="noopener noreferrer"
           className="group mx-auto mt-7 inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#3d2b24] px-7 py-3 text-sm font-semibold text-[#fff8ec] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#513a30] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c6a16b]"
         >
-          Google&apos;da Değerlendir
+          {t("Google'da Değerlendir")}
           <ArrowUpRight
             size={18}
             className="text-[#d8ba8c] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

@@ -1,8 +1,10 @@
 "use client";
 
+import { usePublicLocale } from "@/components/public-site/Locale";
 import { useEffect, useState } from "react";
 
 export default function PremiumIntro() {
+  const { t } = usePublicLocale();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export default function PremiumIntro() {
   return (
     <div
       className="ld-reveal fixed inset-0 z-[9999] overflow-hidden bg-[#f6e8d7]"
-      aria-label="1 Lezzet Döner açılış animasyonu"
+      aria-label={t("1 Lezzet Döner açılış animasyonu")}
     >
       {/* Gerçek, tekrarlayan logo deseni */}
       <div
@@ -57,7 +59,7 @@ export default function PremiumIntro() {
 
         <div className="ld-reveal-caption mt-5 text-center">
           <p className="text-[10px] font-bold tracking-[.24em] text-[#7c3440] sm:text-xs">
-            GERÇEK LEZZET, HER LOKMADA
+            {t("GERÇEK LEZZET, HER LOKMADA")}
           </p>
         </div>
       </div>
