@@ -1,6 +1,7 @@
 package com.lezzetdoner.backend.config;
 
 import com.lezzetdoner.backend.auth.JwtAuthenticationFilter;
+import com.lezzetdoner.backend.auth.RemotePanelAdminFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RemotePanelAdminFilter remotePanelAdminFilter;
 
     private final List<String> allowedOrigins;
 
@@ -29,11 +31,15 @@ public class SecurityConfig {
             JwtAuthenticationFilter jwtAuthenticationFilter,
 
             @Value("${app.cors.allowed-origins}")
-            String allowedOrigins
+            String allowedOrigins,
+
+            @Value("${MENU_SSO_ADMIN_CHECK_URL:}")
+            String panelAdminCheckUrl
     ) {
 
         this.jwtAuthenticationFilter =
                 jwtAuthenticationFilter;
+        this.remotePanelAdminFilter = new RemotePanelAdminFilter(panelAdminCheckUrl);
 
         this.allowedOrigins =
                 Arrays.stream(
@@ -132,6 +138,10 @@ public class SecurityConfig {
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterAfter(
+                        remotePanelAdminFilter,
+                        JwtAuthenticationFilter.class
                 );
 
         return http.build();
