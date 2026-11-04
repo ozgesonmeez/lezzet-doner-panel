@@ -44,6 +44,8 @@ import {
   useAuth,
 } from "@/context/AuthContext";
 
+import CourierCashReconciliation from "@/components/CourierCashReconciliation";
+
 type EditingEntry = {
   entryId: number;
   value: string;
@@ -1455,6 +1457,10 @@ export default function CourierTrackingPage() {
               }
             )}
           </div>
+        )}
+
+        {isAdmin && (
+          <CourierCashReconciliation couriers={couriers} selectedDate={selectedDate} />
         )}
 
         {isAdmin && (

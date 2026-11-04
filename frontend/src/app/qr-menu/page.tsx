@@ -11,6 +11,7 @@ import {
   Plus,
   QrCode,
   RefreshCw,
+  Search,
   Sparkles,
   UtensilsCrossed,
 } from "lucide-react";
@@ -29,6 +30,8 @@ import {
 export default function QrMenuPage() {
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [products, setProducts] = useState<MenuProduct[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "soldOut" | "inactive" | "noImage">("all");
   const [selectedCategoryId, setSelectedCategoryId] =
     useState<number | null>(null);
 
@@ -100,13 +103,20 @@ export default function QrMenuPage() {
     [categories, selectedCategoryId]
   );
 
-  const visibleProducts = useMemo(
-    () =>
-      products.filter(
-        (product) => product.categoryId === selectedCategoryId
-      ),
-    [products, selectedCategoryId]
-  );
+  const visibleProducts = useMemo(() => {
+    const query = searchQuery.trim().toLocaleLowerCase("tr-TR");
+    return products.filter((product) => {
+      const inCategory = Boolean(query) || product.categoryId === selectedCategoryId;
+      const matchingText = !query || `${product.name} ${product.categoryName}`.toLocaleLowerCase("tr-TR").includes(query);
+      const matchingStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && product.active && !product.soldOut) ||
+        (statusFilter === "soldOut" && product.soldOut) ||
+        (statusFilter === "inactive" && !product.active) ||
+        (statusFilter === "noImage" && !product.imageUrl);
+      return inCategory && matchingText && matchingStatus;
+    });
+  }, [products, selectedCategoryId, searchQuery, statusFilter]);
 
   const activeProducts = products.filter(
     (product) => product.active
@@ -291,7 +301,7 @@ export default function QrMenuPage() {
                 </p>
 
                 <h2 className="mt-1 text-2xl font-black text-[#082d4e]">
-                  {selectedCategory?.name ?? "Kategori seçin"}
+                  {searchQuery.trim() ? "Tüm kategorilerde arama" : (selectedCategory?.name ?? "Kategori seçin")}
                 </h2>
 
                 {selectedCategory?.description && (
@@ -319,8 +329,32 @@ export default function QrMenuPage() {
               </p>
             </div>
 
+            <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 sm:flex-row sm:items-end">
+              <label className="block flex-1 text-xs font-bold text-slate-600">
+                Ürün ara {searchQuery.trim() && <span className="font-normal text-slate-400">· Tüm kategorilerde</span>}
+                <span className="relative mt-1.5 block">
+                  <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Ürün adı veya kategori" className="h-11 w-full rounded-xl border border-slate-200 pl-10 pr-3 text-sm font-medium outline-none focus:border-orange-400" />
+                </span>
+              </label>
+              <label className="block text-xs font-bold text-slate-600 sm:w-48">
+                Durum
+                <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)} className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold outline-none focus:border-orange-400">
+                  <option value="all">Tüm ürünler</option>
+                  <option value="active">Satışta olanlar</option>
+                  <option value="soldOut">Tükendi</option>
+                  <option value="inactive">Pasif ürünler</option>
+                  <option value="noImage">Görselsiz ürünler</option>
+                </select>
+              </label>
+              {(searchQuery || statusFilter !== "all") && (
+                <button type="button" onClick={() => {setSearchQuery("");setStatusFilter("all");}} className="h-11 rounded-xl bg-slate-100 px-4 text-xs font-bold text-slate-600 hover:bg-slate-200">Temizle</button>
+              )}
+            </div>
             {visibleProducts.length === 0 ? (
-              <EmptyProducts />
+              searchQuery || statusFilter !== "all" ? (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">Arama veya filtreyle eşleşen ürün yok.</div>
+              ) : <EmptyProducts />
             ) : (
               <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
                 {visibleProducts.map((product) => (

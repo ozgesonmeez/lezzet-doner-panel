@@ -44,6 +44,8 @@ import {
   useAuth,
 } from "@/context/AuthContext";
 
+import OperationsAlerts from "@/components/OperationsAlerts";
+
 /* =========================================================
    DATE HELPERS
 ========================================================= */
@@ -720,6 +722,8 @@ export default function Home() {
             }
           />
         </div>
+
+        <OperationsAlerts dailyCash={dailyCash} couriers={couriers} />
 
         {/* LIVE STATUS */}
 
