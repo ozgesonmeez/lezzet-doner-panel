@@ -64,7 +64,7 @@ const adminMenu = [
   },
   {
     label: "QR Menü",
-    href: "https://www.1lezzetdoner.com/qr-menu",
+    href: "/qr-menu",
     icon: QrCode,
   },
   {
@@ -251,8 +251,6 @@ export default function Sidebar() {
                     href={
                       item.href
                     }
-                    target={item.label === "QR Menü" ? "_blank" : undefined}
-                    rel={item.label === "QR Menü" ? "noopener noreferrer" : undefined}
                     className={`flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${
                       active
                         ? "bg-orange-500 text-white shadow-lg shadow-orange-950/20"
