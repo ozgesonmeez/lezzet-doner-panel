@@ -63,6 +63,8 @@ const suggestedChannels = [
   "Veresiye",
 ];
 
+const suggestedExpenses = ["Lavaş", "Ekmek", "Sütaş"] as const;
+
 function getTodayInIstanbul() {
   const parts =
     new Intl.DateTimeFormat(
@@ -1140,6 +1142,27 @@ export default function DailyCashPage() {
                 placeholder="Örn. Lavaş"
                 className="min-h-[52px] w-full rounded-xl border border-slate-200 px-4 outline-none focus:border-red-400"
               />
+              <div className="mt-2 flex flex-wrap gap-2" aria-label="Gider açıklaması kısayolları">
+                {suggestedExpenses.map((description) => (
+                  <button
+                    key={description}
+                    type="button"
+                    onClick={() =>
+                      setExpenseForm((current) => ({
+                        ...current,
+                        description,
+                      }))
+                    }
+                    className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
+                      expenseForm.description === description
+                        ? "border-red-300 bg-red-50 text-red-700"
+                        : "border-slate-200 bg-slate-50 text-slate-600 hover:border-red-200 hover:bg-red-50"
+                    }`}
+                  >
+                    {description}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="mt-5">
