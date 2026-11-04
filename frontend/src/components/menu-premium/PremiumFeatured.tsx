@@ -30,7 +30,7 @@ export default function PremiumFeatured({ products, onOpen }: { products: MenuPr
   const featured = products.filter(p => p.featured);
   const display = (featured.length ? featured : products).slice(0, 4);
   return (
-    <section className="bg-[#fffaf4] px-0 py-4 sm:py-6">
+    <section className="ld-watermark-surface bg-[#fffaf4] px-0 py-4 sm:py-6">
       <div className="mx-auto max-w-7xl">
 
         {display.length === 0 ? (
@@ -42,7 +42,7 @@ export default function PremiumFeatured({ products, onOpen }: { products: MenuPr
               const amounts = product.variants?.map(v => v.price).filter(v => Number.isFinite(v)) ?? [];
               const minPrice = amounts.length ? Math.min(...amounts) : product.basePrice;
               return (
-                <button data-featured-slide type="button" key={product.id} onClick={() => onOpen(product)} className="group flex min-h-[230px] sm:h-[260px] w-full min-w-full shrink-0 snap-center overflow-hidden rounded-[24px] sm:h-[260px] border border-[#eadfd4] bg-white text-left shadow-[0_10px_35px_rgba(44,28,24,.045)] transition duration-300 hover:shadow-[0_20px_45px_rgba(44,28,24,.13)]">
+                <button data-featured-slide data-scroll-reveal="card" type="button" key={product.id} onClick={() => onOpen(product)} className="group flex min-h-[230px] sm:h-[260px] w-full min-w-full shrink-0 snap-center overflow-hidden rounded-[24px] sm:h-[260px] border border-[#eadfd4] bg-white text-left shadow-[0_10px_35px_rgba(44,28,24,.045)] transition duration-300 hover:shadow-[0_20px_45px_rgba(44,28,24,.13)]">
                   <div className="relative flex min-h-[230px] w-[38%] shrink-0 items-center justify-center overflow-hidden bg-[#f0e6da] sm:h-[260px] sm:w-[38%]">
                     {product.imageUrl ? <img src={product.imageUrl} alt={product.name} loading="lazy" className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105" /> : <div className="flex flex-col items-center gap-3 text-[#b8a18e]"><UtensilsCrossed size={44} strokeWidth={1} /><span className="text-[10px] font-semibold uppercase tracking-widest">Görsel Yakında</span></div>}
                     {product.soldOut && <span className="absolute left-3 top-3 rounded-full bg-[#281c19] px-3 py-1 text-[10px] font-bold text-white">Tükendi</span>}

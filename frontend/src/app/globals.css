@@ -27,118 +27,88 @@ body {
 
 
 
-/* 1 Lezzet Döner - original logo watermark */
-.ld-logo-watermark {
-  position: relative;
-  isolation: isolate;
-  background-color: #f8eddf;
+/* Public restaurant surfaces retain their own background colors. */
+.ld-public-site {
+  --ld-watermark-image: url("/lezzet-doner-logo-seffaf.png");
+  --ld-watermark-width: clamp(180px, 54vw, 740px);
 }
 
-.ld-logo-watermark::before {
+.ld-public-site > main,
+.ld-public-site .ld-watermark-surface {
+  position: relative;
+  isolation: isolate;
+}
+
+.ld-public-site > main::before,
+.ld-public-site .ld-watermark-surface::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   background-color: #866c5b;
-  opacity: 0.055;
-
-  -webkit-mask-image: url('/lezzet-doner-logo-seffaf.png');
-  mask-image: url('/lezzet-doner-logo-seffaf.png');
-
-  -webkit-mask-size: 145px auto;
-  mask-size: 145px auto;
-
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-
-  -webkit-mask-position: center;
+  opacity: 0.08;
+  mask-image: var(--ld-watermark-image);
   mask-position: center;
+  mask-size: min(85%, var(--ld-watermark-width)) auto;
+  mask-repeat: no-repeat space;
 }
 
-/* Sparse repeating watermark with generous spacing */
-.ld-logo-watermark {
-  background-image:
-    url('/lezzet-doner-logo-seffaf.png');
-  background-size: 370px auto;
-  background-repeat: repeat;
-  background-position: 35px 20px;
+.ld-public-site .ld-logo-watermark {
+  background-color: #f8eddf;
 }
 
-@media (max-width: 639px) {
-  .ld-logo-watermark::before {
-    opacity: 0.035;
-    -webkit-mask-size: 100px auto;
-    mask-size: 100px auto;
-  }
-
-  .ld-logo-watermark {
-    background-size: 270px auto;
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .ld-public-site > main::before,
+    .ld-public-site .ld-watermark-surface::before {
+      inset-block: 18px;
+      animation: ld-watermark-drift linear both;
+      animation-timeline: scroll(root block);
+    }
   }
 }
 
-
-/* 1 Lezzet Döner — selected PNG background */
-.ld-logo-watermark {
-  background-color: #f8eddf !important;
-  background-image: url('/Krem%20Zemin%20%C3%9Czerinde%20Lezzet%20D%C3%B6ner%20Deseni.png') !important;
-  background-size: 2200px auto !important;
-  background-repeat: repeat !important;
-  background-position: center top !important;
+@keyframes ld-watermark-drift {
+  from { translate: 0 -16px; }
+  to { translate: 0 16px; }
 }
 
-.ld-logo-watermark::before {
-  display: none !important;
-}
-
-
-/* Consistent logo background scale on smaller screens */
-@media (max-width: 639px) {
-  .ld-logo-watermark {
-    background-size: 1500px auto !important;
-    background-position: center top !important;
+@keyframes ld-scroll-enter {
+  from {
+    opacity: 0;
+    translate: 0 var(--ld-reveal-distance, 14px);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .ld-public-site .ld-revealed {
+    animation: ld-scroll-enter 620ms cubic-bezier(.22, 1, .36, 1) var(--ld-reveal-delay, 0ms) backwards;
+  }
 
-/* 1 Lezzet Döner — premium scroll animations */
-@keyframes ld-soft-reveal {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  .ld-public-site .ld-revealed:focus-within {
+    opacity: 1 !important;
+    translate: none !important;
+  }
 
-.ld-scroll-reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 650ms ease, transform 650ms ease;
-}
+  .ld-public-site [data-scroll-reveal="fade"] {
+    --ld-reveal-distance: 0px;
+  }
 
-.ld-scroll-reveal.ld-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.ld-product-enter {
-  animation: ld-soft-reveal 450ms ease both;
+  .ld-public-site [data-scroll-reveal="card"] {
+    --ld-reveal-distance: 8px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ld-scroll-reveal,
-  .ld-scroll-reveal.ld-visible {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
-  .ld-product-enter {
-    animation: none;
-  }
-
   html {
     scroll-behavior: auto !important;
   }
 }
-
 
 /* 1 Lezzet Döner — Google yorum geçiş animasyonu */
 @keyframes ld-review-slide-in {

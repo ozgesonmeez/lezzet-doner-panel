@@ -29,13 +29,14 @@ export default function PremiumOnlineOrder() {
           </p>
 
           <h2
+            data-scroll-reveal="heading"
             id="online-siparis-baslik"
             className="mt-4 font-serif text-4xl font-semibold sm:text-6xl"
           >
             Lezzet kapına gelsin.
           </h2>
 
-          <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-[#dcc8bb]">
+          <p data-scroll-reveal="fade" className="mx-auto mt-4 max-w-md text-sm leading-6 text-[#dcc8bb]">
             Sevdiğin döner lezzetlerini dilediğin platformdan keşfet.
           </p>
 

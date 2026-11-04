@@ -49,11 +49,11 @@ export default function PremiumReviewCTA() {
 
         <div className="my-7 h-px bg-[#e5d8c7]" />
 
-        <h2 className="mx-auto max-w-lg font-serif text-[26px] italic leading-[1.3] text-[#382820] sm:text-[34px]">
+        <h2 data-scroll-reveal="heading" className="mx-auto max-w-lg font-serif text-[26px] italic leading-[1.3] text-[#382820] sm:text-[34px]">
           Lezzetimizin hikâyesine siz de bir iz bırakın.
         </h2>
 
-        <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#867466]">
+        <p data-scroll-reveal="fade" className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#867466]">
           Deneyiminizi paylaşarak 1 Lezzet Döner ailesinin
           hikâyesine ortak olun.
         </p>

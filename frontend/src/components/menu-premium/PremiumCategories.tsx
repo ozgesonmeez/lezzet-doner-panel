@@ -56,24 +56,21 @@ export default function PremiumCategories({
       id="lezzetler"
       className="relative isolate overflow-hidden px-5 py-9 sm:px-10 sm:py-24"
     >
-      {/* Warm editorial texture; no product images are modified. */}
-      
-      
       <div className="relative mx-auto max-w-7xl">
         <div className="mb-6 text-center sm:mb-12">
           <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#92182e]">
             1 LEZZET DÖNER
           </p>
 
-          <h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-[#2c1d18] sm:mt-4 sm:text-6xl">
+          <h2 data-scroll-reveal="heading" className="mt-3 font-serif text-3xl font-semibold tracking-tight text-[#2c1d18] sm:mt-4 sm:text-6xl">
             Lezzetlerimizi keşfedin.
           </h2>
-          <div aria-hidden="true" className="mx-auto mt-3 h-[2px] w-12 rounded-full bg-[#a91d38] sm:mt-5 sm:w-14" />
+          <div data-scroll-reveal="fade" aria-hidden="true" className="mx-auto mt-3 h-[2px] w-12 rounded-full bg-[#a91d38] sm:mt-5 sm:w-14" />
           <p className="mx-auto mt-3 text-[10px] font-semibold uppercase tracking-[.22em] text-[#a98569]">
             Özenle hazırlanan lezzetler
           </p>
 
-          <p className="mx-auto mt-2 max-w-xl text-xs leading-5 text-[#8d7668] sm:mt-4 sm:text-sm sm:leading-7">
+          <p data-scroll-reveal="fade" className="mx-auto mt-2 max-w-xl text-xs leading-5 text-[#8d7668] sm:mt-4 sm:text-sm sm:leading-7">
             Damak tadınıza uygun kategoriyi seçin, favori lezzetinizi keşfedin.
           </p>
         </div>
@@ -88,6 +85,7 @@ export default function PremiumCategories({
             return (
               <button
                 key={category.id}
+                data-scroll-reveal="card"
                 type="button"
                 onClick={() => onSelect(category.id)}
                 className="group relative overflow-hidden rounded-[24px] border border-[#e7d4c2] bg-[#fffaf5] text-left shadow-[0_14px_38px_rgba(57,29,18,0.09)] transition-all duration-300 hover:-translate-y-1 hover:border-[#92182e]/40 hover:shadow-[0_20px_45px_rgba(57,29,18,0.12)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#92182e]"

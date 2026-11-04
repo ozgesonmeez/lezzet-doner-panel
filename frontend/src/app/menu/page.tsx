@@ -63,6 +63,7 @@ function ProductCard({
       type="button"
       onClick={() => onOpen(product)}
       aria-label={`${product.name} ürün detaylarını incele`}
+      data-scroll-reveal="card"
       className="group flex w-full min-h-[152px] overflow-hidden rounded-[22px] border border-[#E8DDD4] bg-white text-left shadow-[0_8px_24px_rgba(58,33,28,0.045)] transition duration-300 hover:border-[#D9C7BC] hover:shadow-[0_12px_30px_rgba(58,33,28,0.10)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#941B32] sm:flex-col sm:rounded-[28px] sm:hover:-translate-y-1"
     >
       <div className="relative w-[118px] shrink-0 self-stretch overflow-hidden bg-[#F6F0EB] min-[390px]:w-[138px] sm:aspect-[4/3] sm:w-full">
@@ -475,11 +476,11 @@ export default function PublicMenuPage() {
             Lezzetlerimizi Keşfet
           </span>
 
-          <h2 className="mt-1.5 text-2xl font-black tracking-tight sm:mt-4 sm:text-5xl">
+          <h2 data-scroll-reveal="heading" className="mt-1.5 text-2xl font-black tracking-tight sm:mt-4 sm:text-5xl">
             Menümüz
           </h2>
 
-          <p className="mt-1 text-xs leading-6 text-[#8D7770] sm:mt-4 sm:text-base">
+          <p data-scroll-reveal="fade" className="mt-1 text-xs leading-6 text-[#8D7770] sm:mt-4 sm:text-base">
             Favori lezzetlerini keşfet, güncel fiyatları incele.
           </p>
         </div>
@@ -571,7 +572,7 @@ export default function PublicMenuPage() {
                   {search ? "Arama Sonuçları" : activeCategory === null ? "Bütün Lezzetler" : "Seçili Kategori"}
                 </p>
 
-                <h3 className="mt-2 text-xl font-black tracking-tight sm:text-3xl">
+                <h3 data-scroll-reveal="heading" className="mt-2 text-xl font-black tracking-tight sm:text-3xl">
                   {search
                     ? "Bulunan Lezzetler"
                     : activeCategory === null ? "Tüm Ürünler" : selectedCategory?.name ?? "Ürünler"}
@@ -621,18 +622,18 @@ export default function PublicMenuPage() {
       {/* ABOUT */}
       <section
         id="hakkimizda"
-        className="bg-[#FFF1E5] px-5 py-12 sm:px-6 sm:py-20"
+        className="ld-watermark-surface bg-[#FFF1E5] px-5 py-12 sm:px-6 sm:py-20"
       >
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#941B32] sm:text-xs">
             1 Lezzet Döner
           </p>
 
-          <h2 className="mt-3 text-2xl font-black tracking-tight sm:mt-4 sm:text-4xl">
+          <h2 data-scroll-reveal="heading" className="mt-3 text-2xl font-black tracking-tight sm:mt-4 sm:text-4xl">
             Lezzetli Bir Mola Ver
           </h2>
 
-          <p className="mt-4 text-xs leading-7 text-[#79655E] sm:mt-5 sm:text-base sm:leading-8">
+          <p data-scroll-reveal="fade" className="mt-4 text-xs leading-7 text-[#79655E] sm:mt-5 sm:text-base sm:leading-8">
             Tavuk döner, yaprak et döner ve birbirinden lezzetli
             seçeneklerimizi keşfet. Güncel ürünlerimizi ve fiyatlarımızı
             menümüzden kolayca inceleyebilirsin.

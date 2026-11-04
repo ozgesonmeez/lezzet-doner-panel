@@ -1,5 +1,8 @@
 "use client";
 
+import { useRef } from "react";
+import BackToTop from "@/components/public-site/BackToTop";
+import ScrollReveal from "@/components/public-site/ScrollReveal";
 import { usePathname } from "next/navigation";
 import AppShell from "@/components/AppShell";
 
@@ -9,6 +12,7 @@ export default function LayoutController({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const publicSite = useRef<HTMLDivElement>(null);
 
   const isPublicPage =
     pathname === "/" ||
@@ -18,7 +22,13 @@ export default function LayoutController({
     pathname.startsWith("/menu-premium/");
 
   if (isPublicPage) {
-    return <>{children}</>;
+    return (
+      <div ref={publicSite} tabIndex={-1} className="ld-public-site">
+        {children}
+        <ScrollReveal key={pathname} scope={publicSite} />
+        <BackToTop focusTop={() => publicSite.current?.focus({ preventScroll: true })} />
+      </div>
+    );
   }
 
   return <AppShell>{children}</AppShell>;

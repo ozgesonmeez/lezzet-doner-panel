@@ -1,7 +1,6 @@
 "use client";
 import PremiumIntro from "@/components/menu-premium/PremiumIntro";
 import PremiumProductModal from "@/components/menu-premium/PremiumProductModal";
-import PremiumScrollReveal from "@/components/menu-premium/PremiumScrollReveal";
 import PremiumReviewCTA from "@/components/menu-premium/PremiumReviewCTA";
 import PremiumGoogleReviews from "@/components/menu-premium/PremiumGoogleReviews";
 
@@ -145,7 +144,7 @@ export default function PremiumMenuPage(){
 </div>
 
 
-<div className="ld-logo-watermark">
+<div className="ld-logo-watermark ld-watermark-surface">
 <section className="relative flex min-h-[175px] items-center justify-center px-5 py-8 sm:min-h-[205px] sm:px-10 sm:py-10">
   <div className="relative z-10 mx-auto w-full max-w-7xl">
     <a
@@ -196,7 +195,7 @@ export default function PremiumMenuPage(){
      <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[#92182e]">
       USTALIĞIMIZIN İMZASI
      </p>
-     <h2 className="mt-2 font-serif text-xl font-bold text-[#2c1d18] sm:text-2xl">
+     <h2 data-scroll-reveal="heading" className="mt-2 font-serif text-xl font-bold text-[#2c1d18] sm:text-2xl">
       Öne Çıkan Lezzetlerimiz
      </h2>
      <p className="mt-1 text-xs text-[#8d7668]">
@@ -223,8 +222,8 @@ export default function PremiumMenuPage(){
 )}
     {!loading&&!error&&<LezzetOnerici products={all} categories={categories} onOpen={setSelected}/>}
     
-    <section id="menu" className="scroll-mt-24 bg-transparent px-5 py-16 sm:px-10 sm:py-24"><div className="mx-auto max-w-7xl"><div className="mb-8 flex flex-wrap items-end justify-between gap-5"><div><p className="text-[11px] font-black uppercase tracking-[.25em] text-[#92182e]">1 LEZZET DÖNER</p><h2 className="mt-3 font-serif text-5xl font-semibold tracking-tight sm:text-7xl">Menümüz.</h2><p className="mt-3 text-sm text-[#8d7668]">Güncel ürünlerimizi ve fiyatlarımızı keşfet.</p></div><label className="flex w-full items-center gap-3 rounded-full border border-[#e8d9ca] bg-white px-5 py-3 sm:w-[300px]"><Search size={18} className="text-[#92182e]"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Ürün ara..." className="w-full bg-transparent text-sm outline-none" aria-label="Ürün ara"/></label></div>
-    {loading?<p className="py-14 text-center text-[#8d7668]">Menü yükleniyor...</p>:error?<p role="alert" className="rounded-2xl bg-red-50 p-6 text-red-700">{error}</p>:<><div className="mb-9 flex gap-2 overflow-x-auto pb-3">{categories.map(c=><button key={c.id} type="button" onClick={()=>{setActive(c.id);setSearch("");}} className={`shrink-0 rounded-full px-5 py-3 text-xs font-bold ${(!searching && effectiveActive===c.id)?"bg-[#92182e] text-white":"border border-[#eadfd2] bg-[#f7efe7]"}`}>{c.name}</button>)}</div><div className="mb-5 flex items-center justify-between"><h3 className="font-serif text-2xl font-bold">{searching?"Arama Sonuçları":categories.find(c=>c.id===effectiveActive)?.name ?? "Kategorilerimiz"}</h3>{(effectiveActive !== null || searching) && <span className="text-xs text-[#937e70]">{products.length} ürün</span>}</div>{products.length?<div className="grid gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{products.map((p,index)=><button type="button" key={p.id} onClick={()=>setSelected(p)} style={{animationDelay:`${Math.min(index,8)*55}ms`}} className="ld-product-enter group flex overflow-hidden rounded-[20px] border border-[#e9dccc] bg-white text-left shadow-sm transition hover:border-[#d5b9a5] hover:shadow-lg sm:block sm:rounded-[24px] sm:hover:-translate-y-1"><div className="relative flex w-[112px] shrink-0 items-center justify-center overflow-hidden bg-[#f0e3d4] sm:aspect-[5/4] sm:w-full">{p.imageUrl?<img src={p.imageUrl} alt={p.name} loading="lazy" className="h-full w-full object-contain p-3 transition duration-500 group-hover:scale-105"/>:<UtensilsCrossed size={29} strokeWidth={1.1} className="text-[#baa18d]"/>}{p.soldOut&&<span className="absolute left-3 top-3 rounded-full bg-[#92182e] px-3 py-1 text-xs font-bold text-white">Tükendi</span>}</div><div className="min-w-0 flex-1 p-3 sm:p-5"><h4 className="font-serif text-base font-bold sm:text-xl">{p.name}</h4>{p.description&&<p className="mt-1 line-clamp-2 text-xs leading-5 text-[#8d7668] sm:mt-2">{p.description}</p>}{p.variants.length > 0 && (
+    <section id="menu" className="scroll-mt-24 bg-transparent px-5 py-16 sm:px-10 sm:py-24"><div className="mx-auto max-w-7xl"><div className="mb-8 flex flex-wrap items-end justify-between gap-5"><div><p className="text-[11px] font-black uppercase tracking-[.25em] text-[#92182e]">1 LEZZET DÖNER</p><h2 data-scroll-reveal="heading" className="mt-3 font-serif text-5xl font-semibold tracking-tight sm:text-7xl">Menümüz.</h2><p className="mt-3 text-sm text-[#8d7668]">Güncel ürünlerimizi ve fiyatlarımızı keşfet.</p></div><label className="flex w-full items-center gap-3 rounded-full border border-[#e8d9ca] bg-white px-5 py-3 sm:w-[300px]"><Search size={18} className="text-[#92182e]"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Ürün ara..." className="w-full bg-transparent text-sm outline-none" aria-label="Ürün ara"/></label></div>
+    {loading?<p className="py-14 text-center text-[#8d7668]">Menü yükleniyor...</p>:error?<p role="alert" className="rounded-2xl bg-red-50 p-6 text-red-700">{error}</p>:<><div className="mb-9 flex gap-2 overflow-x-auto pb-3">{categories.map(c=><button key={c.id} type="button" onClick={()=>{setActive(c.id);setSearch("");}} className={`shrink-0 rounded-full px-5 py-3 text-xs font-bold ${(!searching && effectiveActive===c.id)?"bg-[#92182e] text-white":"border border-[#eadfd2] bg-[#f7efe7]"}`}>{c.name}</button>)}</div><div className="mb-5 flex items-center justify-between"><h3 className="font-serif text-2xl font-bold">{searching?"Arama Sonuçları":categories.find(c=>c.id===effectiveActive)?.name ?? "Kategorilerimiz"}</h3>{(effectiveActive !== null || searching) && <span className="text-xs text-[#937e70]">{products.length} ürün</span>}</div>{products.length?<div className="grid gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{products.map(p=><button data-scroll-reveal="card" type="button" key={p.id} onClick={()=>setSelected(p)} className="group flex overflow-hidden rounded-[20px] border border-[#e9dccc] bg-white text-left shadow-sm transition hover:border-[#d5b9a5] hover:shadow-lg sm:block sm:rounded-[24px] sm:hover:-translate-y-1"><div className="relative flex w-[112px] shrink-0 items-center justify-center overflow-hidden bg-[#f0e3d4] sm:aspect-[5/4] sm:w-full">{p.imageUrl?<img src={p.imageUrl} alt={p.name} loading="lazy" className="h-full w-full object-contain p-3 transition duration-500 group-hover:scale-105"/>:<UtensilsCrossed size={29} strokeWidth={1.1} className="text-[#baa18d]"/>}{p.soldOut&&<span className="absolute left-3 top-3 rounded-full bg-[#92182e] px-3 py-1 text-xs font-bold text-white">Tükendi</span>}</div><div className="min-w-0 flex-1 p-3 sm:p-5"><h4 className="font-serif text-base font-bold sm:text-xl">{p.name}</h4>{p.description&&<p className="mt-1 line-clamp-2 text-xs leading-5 text-[#8d7668] sm:mt-2">{p.description}</p>}{p.variants.length > 0 && (
   <div className="mt-3 grid grid-cols-3 gap-1.5 sm:grid-cols-2 sm:gap-2">
     {p.variants.map(v => (
       <div key={v.id} className="min-w-0 rounded-xl border border-[#eadfd2] bg-[#fffaf4] px-2.5 py-2 sm:px-3">
@@ -252,7 +251,6 @@ export default function PremiumMenuPage(){
     <PremiumReviewCTA/>
     <PremiumOnlineOrder/>
     </div>
-    <PremiumScrollReveal/>
     <PremiumFooter/>
     <PremiumMobileBar/>
     {selected && (

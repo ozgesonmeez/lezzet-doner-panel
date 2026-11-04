@@ -187,6 +187,7 @@ export default function PremiumGoogleReviews() {
             </p>
 
             <h2
+              data-scroll-reveal="heading"
               id="yorumlar-baslik"
               className="mt-4 font-serif text-5xl font-semibold leading-[1.05] tracking-tight text-[#2d1d18] sm:text-6xl lg:text-7xl"
             >
@@ -194,7 +195,7 @@ export default function PremiumGoogleReviews() {
               <span className="block italic text-[#ad102d]">izleri.</span>
             </h2>
 
-            <p className="mt-5 max-w-md text-sm leading-7 text-[#79655c]">
+            <p data-scroll-reveal="fade" className="mt-5 max-w-md text-sm leading-7 text-[#79655c]">
               Misafirlerimizin Google&apos;da paylaştığı gerçek deneyimler.
               Her yorum bizim için ayrı bir değer.
             </p>
