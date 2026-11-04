@@ -122,39 +122,24 @@ export default function PremiumProductModal({ product, onClose }: Props) {
               </>
             )}
 
-            {/* LEZZET_INGREDIENT_ALLERGEN_V1 */}
-            <div className="mt-6 space-y-2" aria-label="Ürün bilgilendirmesi">
-              <details className="group rounded-2xl border border-[#e3d7c9] bg-[#fffdf9] px-4 py-3">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[#47352a] [&::-webkit-details-marker]:hidden">
-                  <span className="inline-flex items-center gap-2"><span aria-hidden="true" className="text-base">🥬</span>İçindekiler ve ürün açıklaması</span>
-                  <span aria-hidden="true" className="text-[#9c7953] transition-transform group-open:rotate-180">⌄</span>
+            <div className="mt-5 divide-y divide-[#e3d7c9] rounded-2xl border border-[#e3d7c9] bg-[#fffdf9] px-4" aria-label="Ürün bilgilendirmesi">
+              <details className="group">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-semibold text-[#47352a] [&::-webkit-details-marker]:hidden">
+                  İçindekiler
+                  <span aria-hidden="true" className="text-[#9c7953] motion-safe:transition-transform group-open:rotate-180">⌄</span>
                 </summary>
-                <div className="pt-3 text-sm leading-6 text-[#806f60]">
-                  {product.description ? (
-                    <p>{product.description}</p>
-                  ) : (
-                    <p>Bu ürünün içerik açıklaması henüz paylaşılmadı.</p>
-                  )}
-                  <p className="mt-2 text-xs text-[#9a806d]">Açıklama, tam içerik listesi yerine geçmeyebilir. Ayrıntılar için işletmemize danışabilirsiniz.</p>
-                </div>
+                <p className="pb-3 text-sm leading-6 text-[#806f60]">
+                  Bu ürün için doğrulanmış bir içerik listesi henüz paylaşılmadı.
+                </p>
               </details>
-              <details className="group rounded-2xl border border-[#e3d7c9] bg-[#fffdf9] px-4 py-3">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[#47352a] [&::-webkit-details-marker]:hidden">
-                  <span className="inline-flex items-center gap-2"><span aria-hidden="true" className="text-base">🌾</span>Alerjen bilgileri</span>
-                  <span aria-hidden="true" className="text-[#9c7953] transition-transform group-open:rotate-180">⌄</span>
+              <details className="group">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-semibold text-[#47352a] [&::-webkit-details-marker]:hidden">
+                  Alerjen Bilgilendirmesi
+                  <span aria-hidden="true" className="text-[#9c7953] motion-safe:transition-transform group-open:rotate-180">⌄</span>
                 </summary>
-                <div className="pt-3 text-sm leading-6 text-[#806f60]">
-                  {/* LEZZET_MINI_ICON_V1 */}
-                  <p>Bu ürün için doğrulanmış alerjen listesi henüz yayınlanmadı. Alerjiniz veya gıda hassasiyetiniz varsa sipariş vermeden önce içerik ve çapraz temas risklerini işletmemizle teyit edin.</p>
-                  <p className="mt-3 text-[11px] font-semibold text-[#927d6c]">Alerjen simgeleri · yalnızca örnektir, bu ürünün içeriğini belirtmez</p>
-                  <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Genel alerjen simgeleri, ürüne özel değildir">
-                    {([{ icon: "🌾", label: "Gluten" }, { icon: "🥛", label: "Süt" }, { icon: "🥚", label: "Yumurta" }, { icon: "🌱", label: "Soya" }, { icon: "🌰", label: "Sert kabuklu yemiş" }] as const).map(item => (
-                      <span key={item.label} className="inline-flex items-center gap-1.5 rounded-full border border-[#eadfd2] bg-[#faf7f0] px-2.5 py-1 text-[11px] text-[#70584b]">
-                        <span aria-hidden="true">{item.icon}</span>{item.label}
-                      </span>
-                    ))}
-                  </div>
-                  <a href="tel:+905423941616" className="mt-3 inline-flex font-semibold text-[#92182e] underline underline-offset-4">İşletmeyi ara: 0542 394 16 16</a>
+                <div className="pb-3 text-sm leading-6 text-[#806f60]">
+                  <p>Alerjen bilgileri kullanılan ekmek, sos ve diğer malzemelere göre değişebilir. Gıda alerjiniz varsa sipariş vermeden önce işletmemizle iletişime geçiniz.</p>
+                  <a href="tel:+905423941616" className="mt-2 inline-flex min-h-11 items-center font-semibold text-[#92182e] underline underline-offset-4">İşletmeyi ara: 0542 394 16 16</a>
                 </div>
               </details>
             </div>
