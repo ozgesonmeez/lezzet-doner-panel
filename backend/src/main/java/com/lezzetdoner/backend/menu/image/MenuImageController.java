@@ -1,8 +1,5 @@
 package com.lezzetdoner.backend.menu.image;
 
-import com.lezzetdoner.backend.user.AppUser;
-import com.lezzetdoner.backend.user.AppUserRepository;
-import com.lezzetdoner.backend.user.UserRole;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 public class MenuImageController {
 
     private final MenuImageService menuImageService;
-    private final AppUserRepository appUserRepository;
 
-    public MenuImageController(
-            MenuImageService menuImageService,
-            AppUserRepository appUserRepository
-    ) {
+    public MenuImageController(MenuImageService menuImageService) {
         this.menuImageService = menuImageService;
-        this.appUserRepository = appUserRepository;
     }
 
     @PostMapping
@@ -33,7 +25,7 @@ public class MenuImageController {
         return menuImageService.upload(file);
     }
 
-    private AppUser requireAdmin(Authentication authentication) {
+    private void requireAdmin(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
@@ -41,20 +33,13 @@ public class MenuImageController {
             );
         }
 
-        AppUser user = appUserRepository
-                .findByEmail(authentication.getName())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Kullanıcı bulunamadı."
-                ));
-
-        if (!user.isActive() || user.getRole() != UserRole.ADMIN) {
+        boolean admin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+        if (!admin) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Bu işlem için yönetici yetkisi gerekiyor."
             );
         }
-
-        return user;
     }
 }
