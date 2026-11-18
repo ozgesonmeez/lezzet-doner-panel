@@ -12,59 +12,55 @@ import {
 
 const GOOGLE_URL = "https://share.google/9UJEMdHLQSOQDKYZS";
 
-const REVIEW_REFERENCE_DATE = new Date("2026-10-12T12:00:00+03:00");
+const DAY_MS = 24 * 60 * 60 * 1000;
+const reviewCalendar = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/Istanbul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 
-function reviewDate(originalDate: string, elapsed: boolean, locale: "tr" | "en"): string {
-  const date = elapsed ? dynamicReviewDate(originalDate) : originalDate;
-  if (locale === "tr") return date;
-  return date.replace(/^bir yıl önce$/, "1 year ago")
-    .replace(/(\d+)\s+(gün|hafta|ay|yıl)/g, (_, amount: string, unit: string) => {
-      const label = ({ gün: "day", hafta: "week", ay: "month", yıl: "year" } as Record<string, string>)[unit];
-      return `${amount} ${label}${amount === "1" ? "" : "s"}`;
-    })
-    .replace(/ önce$/, " ago");
+function reviewDay(time: number): number {
+  const parts = reviewCalendar.formatToParts(time);
+  const year = Number(parts.find(({ type }) => type === "year")?.value);
+  const month = Number(parts.find(({ type }) => type === "month")?.value);
+  const day = Number(parts.find(({ type }) => type === "day")?.value);
+  return Date.UTC(year, month - 1, day);
 }
 
-function dynamicReviewDate(originalDate: string): string {
-  const match = originalDate.match(/^(\\d+)\\s+(gün|hafta|ay|yıl) önce$/);
-  if (!match) return originalDate;
+function reviewDate(publishedAt: string | undefined, today: number | null, locale: "tr" | "en"): string | null {
+  if (!publishedAt || today === null) return null;
 
-  const amount = Number(match[1]);
-  const unit = match[2];
+  const publicationTime = Date.parse(publishedAt);
+  if (!Number.isFinite(publicationTime)) return null;
 
-  const initialDays =
-    unit === "gün" ? amount :
-    unit === "hafta" ? amount * 7 :
-    unit === "ay" ? amount * 30.4375 :
-    amount * 365.25;
+  const days = (today - reviewDay(publicationTime)) / DAY_MS;
+  if (days < 0) return null;
 
-  const elapsedDays = Math.max(
-    0,
-    Math.floor((Date.now() - REVIEW_REFERENCE_DATE.getTime()) / 86400000)
-  );
-
-  const totalDays = Math.floor(initialDays + elapsedDays);
-
-  if (totalDays < 7) return `${totalDays} gün önce`;
-  if (totalDays < 30) return `${Math.floor(totalDays / 7)} hafta önce`;
-  if (totalDays < 365) return `${Math.floor(totalDays / 30.4375)} ay önce`;
-
-  const years = Math.floor(totalDays / 365.25);
-  const remainingMonths = Math.floor((totalDays - years * 365.25) / 30.4375);
-
-  if (remainingMonths < 1) return `${years} yıl önce`;
-  return `${years} yıl ${remainingMonths} ay önce`;
+  const format = new Intl.RelativeTimeFormat(locale, { numeric: days <= 1 ? "auto" : "always" });
+  if (days < 7) return format.format(-days, "day");
+  if (days < 30) return format.format(-Math.floor(days / 7), "week");
+  if (days < 365) return format.format(-Math.max(1, Math.floor(days / 30.4375)), "month");
+  return format.format(-Math.floor(days / 365), "year");
 }
 
-const reviews = [
-  { name: "Deniz Ö.", date: "7 ay önce", text: "Yıllardır hem yerinde aynı zamanda sipariş üzerine yemek yediğimiz temiz ,hijyen kurallarına uygun ,hoşgörülü çalışanlarına sahip bir işletme. Olumsuz yorumları görünce şaşırdım aksi hiçbirşeyle karşılaşmadık çünkü kolaylıklar dilerim 💫🙏🏻", english: "We have eaten here and ordered delivery for years. The restaurant is clean, follows hygiene standards, and has considerate staff. I was surprised by the negative reviews because our experience has been different. Wishing you all the best 💫🙏🏻" },
-  { name: "Alibey Barıtçı", date: "10 ay önce", text: "Usta sizi ilk girdiğinizde mutlu bir tebessümle selamlıyor dönerin lezzetini anlatmaya gerek yok dükkan da aydınlık ve ferah çalışanlar da aynı şekilde güler yüzlü tuvaleti ve masaları da temiz gittiğim güzel mekanlardan biriydi", english: "The cook greets you with a smile as soon as you walk in. The döner speaks for itself. The shop is bright and airy, the staff are friendly, and the tables and restroom are clean. One of the nicer places I’ve visited." },
-  { name: "Kağan Vatansever", date: "bir yıl önce", text: "Gittiğim en iyi dönercilerden biri burasıdır yani sipariş veriyorum en fazla 15-20 dakikada kapıda teslimat çok hızlı dönerin tadı şahane herkese öneririm.", english: "One of the best döner places I’ve tried. When I order, it arrives in 15–20 minutes at most. Delivery is fast, the döner tastes great, and I recommend it to everyone." },
-  { name: "Sevim Meral", date: "5 yıl önce", text: "Gerçekten kesteldeki en güzel hizmet veren müşterinin ne istediğini anlatan temiz güler yüzlü ekip elinize yüreğinize sağlık....", english: "Really lovely service in Kestel, with a clean, friendly team that understands what customers want. Thank you for all your hard work." },
-  { name: "Yüsra Zorlu", date: "10 ay önce", text: "gerçekten kestelde memnun kalarak ve lezzetine güvenerek yediğim tek yer burasıdır.Çalışanların güler yüzlülüğü olsun hijyen olsun lezzet olsun hepsi ayrı bir güzel.fiyat açısındanda gayet iyi bir yer bol kazançlarınız olsun", english: "This is the one place in Kestel where I always leave happy and can count on the food tasting good. The staff are friendly, the place is clean, and the food is delicious. The prices are good too. Wishing you continued success." },
-  { name: "Deniz Kılıç", date: "2 gün önce", text: "Haytımda hem bu kadar güzel hemde bu kadar lezzetli bir döner yemedim öğrenci olamama rağmen bu kadar ilgi ve alaka beni değerli hissettirdi", english: "I’ve never had a döner this good and this tasty. Even though I’m not a student, the care and attention made me feel valued." },
-  { name: "Kerem Doğanay", date: "2 hafta önce", text: "Düzenli gelip yiyorum başka yerlerde yiyince midem ağrıyor ama burda hem sıcak bekleme yok çok iyi ilgileniyorlar ve lezzet olarakta bulunmaz bir lezzet", english: "I eat here regularly. My stomach hurts when I eat elsewhere, but here there’s no waiting in the heat, they take good care of you, and the flavor is hard to find elsewhere." },
-  { name: "nurdan bilir", date: "3 hafta önce", text: "Hayatımda yediğim en güzel döner kaliteli ve çok leziz işletme sahipleri de çok ilgili ve güleryüzlü kesinlikle tavsiye ederim", english: "The best döner I’ve ever had. It’s high quality and delicious, and the owners are attentive and friendly. I definitely recommend it." },
+type Review = {
+  name: string;
+  // A verified ISO publication date or timestamp.
+  publishedAt?: string;
+  text: string;
+  english: string;
+};
+
+const reviews: Review[] = [
+  { name: "Deniz Ö.", text: "Yıllardır hem yerinde aynı zamanda sipariş üzerine yemek yediğimiz temiz ,hijyen kurallarına uygun ,hoşgörülü çalışanlarına sahip bir işletme. Olumsuz yorumları görünce şaşırdım aksi hiçbirşeyle karşılaşmadık çünkü kolaylıklar dilerim 💫🙏🏻", english: "We have eaten here and ordered delivery for years. The restaurant is clean, follows hygiene standards, and has considerate staff. I was surprised by the negative reviews because our experience has been different. Wishing you all the best 💫🙏🏻" },
+  { name: "Alibey Barıtçı", text: "Usta sizi ilk girdiğinizde mutlu bir tebessümle selamlıyor dönerin lezzetini anlatmaya gerek yok dükkan da aydınlık ve ferah çalışanlar da aynı şekilde güler yüzlü tuvaleti ve masaları da temiz gittiğim güzel mekanlardan biriydi", english: "The cook greets you with a smile as soon as you walk in. The döner speaks for itself. The shop is bright and airy, the staff are friendly, and the tables and restroom are clean. One of the nicer places I’ve visited." },
+  { name: "Kağan Vatansever", text: "Gittiğim en iyi dönercilerden biri burasıdır yani sipariş veriyorum en fazla 15-20 dakikada kapıda teslimat çok hızlı dönerin tadı şahane herkese öneririm.", english: "One of the best döner places I’ve tried. When I order, it arrives in 15–20 minutes at most. Delivery is fast, the döner tastes great, and I recommend it to everyone." },
+  { name: "Sevim Meral", text: "Gerçekten kesteldeki en güzel hizmet veren müşterinin ne istediğini anlatan temiz güler yüzlü ekip elinize yüreğinize sağlık....", english: "Really lovely service in Kestel, with a clean, friendly team that understands what customers want. Thank you for all your hard work." },
+  { name: "Yüsra Zorlu", text: "gerçekten kestelde memnun kalarak ve lezzetine güvenerek yediğim tek yer burasıdır.Çalışanların güler yüzlülüğü olsun hijyen olsun lezzet olsun hepsi ayrı bir güzel.fiyat açısındanda gayet iyi bir yer bol kazançlarınız olsun", english: "This is the one place in Kestel where I always leave happy and can count on the food tasting good. The staff are friendly, the place is clean, and the food is delicious. The prices are good too. Wishing you continued success." },
+  { name: "Deniz Kılıç", text: "Haytımda hem bu kadar güzel hemde bu kadar lezzetli bir döner yemedim öğrenci olamama rağmen bu kadar ilgi ve alaka beni değerli hissettirdi", english: "I’ve never had a döner this good and this tasty. Even though I’m not a student, the care and attention made me feel valued." },
+  { name: "Kerem Doğanay", text: "Düzenli gelip yiyorum başka yerlerde yiyince midem ağrıyor ama burda hem sıcak bekleme yok çok iyi ilgileniyorlar ve lezzet olarakta bulunmaz bir lezzet", english: "I eat here regularly. My stomach hurts when I eat elsewhere, but here there’s no waiting in the heat, they take good care of you, and the flavor is hard to find elsewhere." },
+  { name: "nurdan bilir", text: "Hayatımda yediğim en güzel döner kaliteli ve çok leziz işletme sahipleri de çok ilgili ve güleryüzlü kesinlikle tavsiye ederim", english: "The best döner I’ve ever had. It’s high quality and delicious, and the owners are attentive and friendly. I definitely recommend it." },
 ];
 
 
@@ -97,24 +93,17 @@ function Stars({ size = 16 }: { size?: number }) {
   );
 }
 
-type Review = (typeof reviews)[number];
-
 function PreviewCard({
   review,
+  today,
   onClick,
 }: {
   review: Review;
+  today: number | null;
   onClick: () => void;
 }) {
   const { t, locale } = usePublicLocale();
-  const [currentTime, setCurrentTime] = useState(0);
-
-  useEffect(() => {
-    const update = () => setCurrentTime(Date.now());
-    update();
-    const timer = window.setInterval(update, 60 * 60 * 1000);
-    return () => window.clearInterval(timer);
-  }, []);
+  const date = reviewDate(review.publishedAt, today, locale);
 
   return (
     <button
@@ -129,7 +118,7 @@ function PreviewCard({
           </span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-bold text-[#30211d]">{review.name}</span>
-            <span className="mt-1 block text-xs text-[#978174]">{reviewDate(review.date, Boolean(currentTime), locale)}</span>
+            {date && <span className="mt-1 block text-xs text-[#978174]">{date}</span>}
           </span>
         </div>
         <GoogleMark size={20}/>
@@ -153,16 +142,27 @@ function PreviewCard({
 
 export default function PremiumGoogleReviews() {
   const { t, locale } = usePublicLocale();
-  const [today, setToday] = useState(0);
+  const [today, setToday] = useState<number | null>(null);
 
   useEffect(() => {
-    const update = () => setToday(Date.now());
-    update();
-    const timer = window.setInterval(update, 60 * 60 * 1000);
-    return () => window.clearInterval(timer);
-  }, []);
+    if (!reviews.some(({ publishedAt }) => publishedAt)) return;
 
-  void today;
+    let timer: number;
+    const update = () => {
+      window.clearTimeout(timer);
+      const now = Date.now();
+      setToday(reviewDay(now));
+      // Align with the next minute, including midnight in Istanbul.
+      timer = window.setTimeout(update, 60_000 - (now % 60_000));
+    };
+
+    update();
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, []);
 
   const [index, setIndex] = useState(2);
   const [expanded, setExpanded] = useState(false);
@@ -179,6 +179,7 @@ export default function PremiumGoogleReviews() {
   }, [expanded]);
 
   const current = reviews[index];
+  const currentDate = reviewDate(current.publishedAt, today, locale);
   const previous = reviews[(index - 1 + reviews.length) % reviews.length];
   const following = reviews[(index + 1) % reviews.length];
 
@@ -232,7 +233,7 @@ export default function PremiumGoogleReviews() {
 
             <div>
               <div className="font-serif text-3xl font-semibold text-[#30211d]">
-                4,5<span className="text-base text-[#9c887c]">/5</span>
+                4,6<span className="text-base text-[#9c887c]">/5</span>
               </div>
               <div className="mt-1"><Stars size={13}/></div>
               <div className="mt-1 text-[11px] text-[#8b776d]">
@@ -285,7 +286,7 @@ export default function PremiumGoogleReviews() {
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-sm font-bold text-[#30211d]">{current.name}</h3>
                     <p className="mt-1 text-[11px] text-[#978174]">
-                      {reviewDate(current.date, Boolean(today), locale)} · {t("Google yorumu")}{locale === "en" && ` · ${t("Çevrilmiş yorum")}`}
+                      {currentDate && `${currentDate} · `}{t("Google yorumu")}{locale === "en" && ` · ${t("Çevrilmiş yorum")}`}
                     </p>
                   </div>
                   <GoogleMark size={20}/>
@@ -318,6 +319,7 @@ export default function PremiumGoogleReviews() {
           <div key={`previous-${index}`} className="ld-review-side-enter hidden lg:block">
             <PreviewCard
               review={previous}
+              today={today}
               onClick={() => go(index - 1)}
             />
           </div>
@@ -343,7 +345,7 @@ export default function PremiumGoogleReviews() {
                   {current.name}
                 </h3>
                 <p className="mt-1 text-xs text-[#978174]">
-                  {reviewDate(current.date, Boolean(today), locale)} · {t("Google yorumu")}{locale === "en" && ` · ${t("Çevrilmiş yorum")}`}
+                  {currentDate && `${currentDate} · `}{t("Google yorumu")}{locale === "en" && ` · ${t("Çevrilmiş yorum")}`}
                 </p>
               </div>
 
@@ -385,6 +387,7 @@ export default function PremiumGoogleReviews() {
           <div key={`following-${index}`} className="ld-review-side-enter hidden lg:block">
             <PreviewCard
               review={following}
+              today={today}
               onClick={() => go(index + 1)}
             />
           </div>
