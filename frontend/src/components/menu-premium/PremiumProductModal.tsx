@@ -12,11 +12,19 @@ const confirmedIngredients = [
 ];
 
 function getIngredients(product: MenuProduct): string | undefined {
-  const description = product.description?.trim().replace(/\s*,\s*/g, ", ");
+  const description = product.description
+    ?.normalize("NFC")
+    .toLocaleLowerCase("tr-TR")
+    .trim()
+    .replace(/[.!]$/, "")
+    .replace(/\s*,\s*/g, ", ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/ ile$/, "");
 
   // Only show a list while this specific product's API description confirms it.
   return confirmedIngredients.find(({ productIds, text }) =>
-    productIds.includes(product.id) && description === `${text} ile`
+    productIds.includes(product.id) && description === text.toLocaleLowerCase("tr-TR")
   )?.text;
 }
 
