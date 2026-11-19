@@ -7,6 +7,7 @@ import PremiumGoogleReviews from "@/components/menu-premium/PremiumGoogleReviews
 
 import PremiumOnlineOrder from "@/components/menu-premium/PremiumOnlineOrder";
 import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ArrowUpRight, ChevronDown, Search, X, UtensilsCrossed } from "lucide-react";
 import PremiumHeader from "@/components/menu-premium/PremiumHeader";
 import PremiumMobileBar from "@/components/menu-premium/PremiumMobileBar";
@@ -108,7 +109,18 @@ function LezzetOnerici({products, categories, onOpen}: {products: MenuProduct[];
 }
 
 const API_URL=process.env.NEXT_PUBLIC_API_URL||"http://localhost:8080";
+const MENULER_CATEGORY_ID = 3;
+
+function getHomeMenuCategoryId(categories: MenuCategory[], selectedId: number | null): number | null {
+  // The public menu API returns only active categories in display order.
+  if (categories.some(category => category.id === selectedId)) return selectedId;
+  return categories.find(category => category.id === MENULER_CATEGORY_ID)?.id
+    ?? categories[0]?.id
+    ?? null;
+}
+
 export default function PremiumMenuPage(){
+  const pathname = usePathname();
   const { t, categoryName, productName, productDescription, variantName } = usePublicLocale();
   const [categories,setCategories]=useState<MenuCategory[]>([]);
   const [loading,setLoading]=useState(true);
@@ -120,7 +132,7 @@ export default function PremiumMenuPage(){
   useEffect(()=>{const controller=new AbortController();(async()=>{try{const res=await fetch(`${API_URL}/api/public/menu`,{signal:controller.signal,cache:"no-store"});if(!res.ok)throw new Error("Menü yüklenemedi");const data:MenuCategory[]=await res.json();setCategories(data);}catch{if(!controller.signal.aborted)setError("Menü şu anda yüklenemiyor. Lütfen daha sonra tekrar deneyin.");}finally{if(!controller.signal.aborted)setLoading(false);}})();return()=>controller.abort();},[]);
   useEffect(()=>{if(!selected)return;const previous=document.body.style.overflow;document.body.style.overflow="hidden";const close=(e:KeyboardEvent)=>{if(e.key==="Escape")setSelected(null)};window.addEventListener("keydown",close);return()=>{document.body.style.overflow=previous;window.removeEventListener("keydown",close)};},[selected]);
   const all=useMemo(()=>categories.flatMap(c=>c.products),[categories]);
-  const effectiveActive = active;
+  const effectiveActive = pathname === "/" ? getHomeMenuCategoryId(categories, active) : active;
   const activeCategory = categories.find(category => category.id === effectiveActive);
   const searching = Boolean(search.trim());
   const products = useMemo(() => {
