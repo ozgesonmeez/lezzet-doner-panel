@@ -6,6 +6,20 @@ import { X } from "lucide-react";
 import type { MenuProduct } from "./PremiumCategories";
 import { price } from "./PremiumFeatured";
 
+const confirmedIngredients = [
+  { productIds: [1, 2, 6, 7, 8], text: "Marul, turşu, sos, mayonez" },
+  { productIds: [3, 12, 13], text: "Soğan, domates" },
+];
+
+function getIngredients(product: MenuProduct): string | undefined {
+  const description = product.description?.trim().replace(/\s*,\s*/g, ", ");
+
+  // Only show a list while this specific product's API description confirms it.
+  return confirmedIngredients.find(({ productIds, text }) =>
+    productIds.includes(product.id) && description === `${text} ile`
+  )?.text;
+}
+
 type Props = {
   product: MenuProduct;
   onClose: () => void;
@@ -13,6 +27,7 @@ type Props = {
 
 export default function PremiumProductModal({ product, onClose }: Props) {
   const { t, productName, productDescription, variantName } = usePublicLocale();
+  const ingredients = getIngredients(product);
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -134,7 +149,7 @@ export default function PremiumProductModal({ product, onClose }: Props) {
                   <span aria-hidden="true" className="text-[#9c7953] motion-safe:transition-transform group-open:rotate-180">⌄</span>
                 </summary>
                 <p className="pb-3 text-sm leading-6 text-[#806f60]">
-                  {t("Bu ürün için doğrulanmış bir içerik listesi henüz paylaşılmadı.")}
+                  {t(ingredients ?? "Bu ürün için doğrulanmış bir içerik listesi henüz paylaşılmadı.")}
                 </p>
               </details>
               <details className="group">

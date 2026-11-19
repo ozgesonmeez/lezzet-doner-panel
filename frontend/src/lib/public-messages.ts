@@ -92,6 +92,8 @@ export const messages: Readonly<Record<string, string>> = {
   "Porsiyon seçenekleri": "Portion options",
   "Ürün bilgilendirmesi": "Product information",
   "İçindekiler": "Ingredients",
+  "Marul, turşu, sos, mayonez": "Lettuce, pickles, sauce, mayonnaise",
+  "Soğan, domates": "Onion, tomatoes",
   "Bu ürün için doğrulanmış bir içerik listesi henüz paylaşılmadı.": "A verified ingredient list has not yet been published for this item.",
   "Alerjen Bilgilendirmesi": "Allergen Information",
   "Alerjen bilgileri kullanılan ekmek, sos ve diğer malzemelere göre değişebilir. Gıda alerjiniz varsa sipariş vermeden önce işletmemizle iletişime geçiniz.": "Allergen information may vary depending on the bread, sauces and other ingredients used. If you have a food allergy, please contact us before ordering.",
