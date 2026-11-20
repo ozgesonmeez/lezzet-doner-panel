@@ -943,7 +943,7 @@ export default function CourierTrackingPage() {
             </p>
           </section>
         ) : (
-          <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {visibleCouriers.map(
               (courier) => {
                 const reversedEntries =
@@ -1104,7 +1104,7 @@ export default function CourierTrackingPage() {
                       <div
                         className={`grid gap-4 ${
                           isAdmin
-                            ? "grid-cols-3"
+                            ? "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(7.5rem,1fr)]"
                             : "grid-cols-2"
                         }`}
                       >
